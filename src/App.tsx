@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Loader2, Mic2, Volume2, Settings } from 'lucide-react';
-import { translations } from './Translations'
+import { translations } from './translations'
 
 type Language = 'en' | 'es';
 
