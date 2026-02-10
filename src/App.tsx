@@ -235,7 +235,7 @@ export default function VoiceCloneGenerator() {
               </div>
               
               <div className="bg-gray-900 rounded-lg p-6 mt-4 border-l-4 border-cyan-500">
-                <p className="text-gray-300 mb-4">
+                <p className="text-lg leading-relaxed break-words text-gray-300 mb-4">
                   {t.thankYouMessage}
                 </p>
                 
