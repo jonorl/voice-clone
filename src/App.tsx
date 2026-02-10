@@ -212,7 +212,7 @@ export default function VoiceCloneGenerator() {
           
           <div className="bg-gradient-to-r from-gray-900 to-slate-900 rounded-lg p-6 border border-gray-700">
             <div className="space-y-4 text-gray-300">
-              <p className="text-lg leading-relaxed">
+              <p className="text-lg leading-relaxed break-words">
                 {t.whoIsBeingClonedDescription} <strong className="text-cyan-400">PsicogamerRandomStreaming</strong>, {t.whoIsBeingClonedText}
               </p>
               
@@ -254,7 +254,7 @@ export default function VoiceCloneGenerator() {
                       href="https://www.twitch.tv/psicogamerrandomstreaming" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium inline-flex items-center gap-1 mt-1"
+                      className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium inline-flex items-center gap-1 mt-1 break-all"
                     >
                       twitch.tv/psicogamerrandomstreaming
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
