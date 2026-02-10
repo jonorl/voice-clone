@@ -51,6 +51,33 @@ interface Translations {
     inferenceSpeedDescription: string;
     footer: string;
     viewGithub: string;
+    whoIsBeingClonedTitle: string;
+    whoIsBeingClonedDescription: string;
+    whoIsBeingClonedText: string;
+    hearOriginalVoice: string;
+    hearOriginalVoiceDescription: string;
+    audioNotSupported: string;
+    thankYouMessage: string;
+    checkOutStreams: string;
+    supportMessage: string;
+    beforeYouTestTitle: string;
+    beforeYouTestDescription: string;
+    goodEnough: string;
+    beforeYouTestText: string;
+    noteOnAccentTitle: string;
+    noteOnAccentText: string;
+    rememberText: string;
+    rememberDescription: string;
+    tryItYourselfTitle: string;
+    textToSynthesize: string;
+    enterSpanishText: string;
+    controlsSpeechExpressiveness: string;
+    hideShow: string;
+    topKSampling: string;
+    limitsVocabularyChoices: string;
+    topPNucleus: string;
+    controlsDiversityOfOutput: string;
+    randomSeed: string;
     technicalDetails: {
       model: string;
       framework: string;
@@ -111,6 +138,33 @@ interface Translations {
     inferenceSpeedDescription: string;
     footer: string;
     viewGithub: string;
+    whoIsBeingClonedTitle: string;
+    whoIsBeingClonedDescription: string;
+    whoIsBeingClonedText: string;
+    hearOriginalVoice: string;
+    hearOriginalVoiceDescription: string;
+    audioNotSupported: string;
+    thankYouMessage: string;
+    checkOutStreams: string;
+    supportMessage: string;
+    beforeYouTestTitle: string;
+    beforeYouTestDescription: string;
+    goodEnough: string;
+    beforeYouTestText: string;
+    noteOnAccentTitle: string;
+    noteOnAccentText: string;
+    rememberText: string;
+    rememberDescription: string;
+    tryItYourselfTitle: string;
+    textToSynthesize: string;
+    enterSpanishText: string;
+    controlsSpeechExpressiveness: string;
+    hideShow: string;
+    topKSampling: string;
+    limitsVocabularyChoices: string;
+    topPNucleus: string;
+    controlsDiversityOfOutput: string;
+    randomSeed: string;
     technicalDetails: {
       model: string;
       framework: string;
@@ -164,7 +218,7 @@ const translations: Translations = {
     tip1: 'Punctuation matters: Use commas and periods to improve natural pauses',
     tip2: 'Temperature: Try 0.5-0.7 for clear speech, 0.7-0.9 for more natural variation',
     tip3: 'Reproducibility: Same text + same parameters + same seed = identical audio',
-    tip4: 'Best results: Spanish text works best as the model was fine-tuned on Spanish samples',
+    tip4: 'Important: This is for Spanish only as the base model and the fine-tuning was done with Spanish samples',
     technicalImplementation: 'Technical Implementation',
     trainingProcess: 'Training Process',
     trainingProcessDescription: 'Fine-tuned XTTS v2 on custom Spanish voice dataset using GPT-based architecture with 10 epochs and AdamW optimizer',
@@ -186,18 +240,45 @@ const translations: Translations = {
       feature3: 'Adjustable generation parameters',
       feature4: 'Real-time synthesis',
     },
+    whoIsBeingClonedTitle: 'Who is Being Cloned?',
+    whoIsBeingClonedDescription: 'The voice you\'ll hear in this demo belongs to my friend',
+    whoIsBeingClonedText: 'a talented content creator and streamer from Buenos Aires, Argentina. I used a collection of WhatsApp voice messages to train this model, and I\'m incredibly grateful for his permission and support in making this project possible.',
+    hearOriginalVoice: 'Hear the Original Voice',
+    hearOriginalVoiceDescription: 'Listen to a sample of the original voice used for training:',
+    audioNotSupported: 'Your browser does not support the audio element.',
+    thankYouMessage: 'A huge thank you to PsicogamerRandomStreaming for trusting me with his voice and being part of this AI experiment! His willingness to collaborate made this demonstration possible.',
+    checkOutStreams: 'Check out his streams!',
+    supportMessage: 'If you enjoy this demo, consider showing some support by following and watching his content. Great streamers deserve our support!',
+    beforeYouTestTitle: 'Before You Test It',
+    beforeYouTestDescription: 'The goal of this project was to create something',
+    goodEnough: 'good enough',
+    beforeYouTestText: 'not perfect. This is a demonstration of what\'s possible with accessible AI voice cloning technology, trained on my local hardware using and AMD 6950XT GPU + ROCm.',
+    noteOnAccentTitle: 'A Note on Accent',
+    noteOnAccentText: 'If you understand Spanish, you may notice that the generated voice sometimes sounds a bit like "Spanish from Spain" rather than Argentinean Spanish. This is completely fine and expected given the scope of this project. The base XTTS v2 model was trained on diverse Spanish data, and with only 45 minutes of training audio, some of those base characteristics occasionally come through. It\'s a quirk that actually demonstrates how the model balances between learned voice characteristics and its pre-trained knowledge.',
+    rememberText: 'Remember:',
+    rememberDescription: 'This isn\'t meant to be a production-ready, flawless voice clone. It\'s a learning project that shows what you can achieve with modern AI tools, a short voice sample, and some experimentation. The results are good-enough for what they are, and that\'s exactly the point!',
+    tryItYourselfTitle: 'Finally... try It Yourself!',
+    textToSynthesize: 'Text to Synthesize',
+    enterSpanishText: 'Enter Spanish text here...',
+    controlsSpeechExpressiveness: 'Controls speech expressiveness',
+    hideShow: 'Hide/Show',
+    topKSampling: 'Top-k (Sampling)',
+    limitsVocabularyChoices: 'Limits vocabulary choices',
+    topPNucleus: 'Top-p (Nucleus)',
+    controlsDiversityOfOutput: 'Controls diversity of output',
+    randomSeed: 'Random Seed',
   },
   es: {
     title: 'Demostración de Clonación de Voz',
     subtitle: 'Síntesis de Voz Impulsada por IA con XTTS v2',
     aboutTitle: 'Sobre Este Proyecto',
-    aboutDescription: 'Este proyecto muestra tecnología de clonación de voz de última generación utilizando XTTS v2, un modelo de texto a voz de vanguardia. Afiné el modelo con muestras de voz en español para crear un sistema de síntesis de voz personalizado que puede generar discurso de sonido natural a partir de cualquier entrada de texto.',
+    aboutDescription: 'Este proyecto muestra tecnología de clonación de voz de última generación utilizando XTTS v2, un modelo de texto a voz de vanguardia. Afiné el modelo con muestras de voz en español para crear un sistema de síntesis de voz personalizado que puede generar discurso de sonido natural a partir de cualquier texto.',
     technicalApproach: 'Enfoque Técnico',
     keyFeatures: 'Características Principales',
     howItWorksTitle: 'Cómo Funciona la Clonación de Voz',
     howItWorksDescription: 'El sistema utiliza un proceso de dos etapas: Primero, analiza una muestra de audio de referencia para extraer características de voz (timbre, tono, estilo de habla). Luego, genera discurso a partir del texto mientras mantiene estos rasgos vocales. El modelo XTTS v2 emplea codificación neuronal avanzada y modelado de secuencias basado en GPT para producir discurso de alta calidad y sonido natural. El ajuste fino en muestras de español mejora la pronunciación, el ritmo y la autenticidad del acento.',
     modelParameters: 'Parámetros del Modelo',
-    modelParametersDescription: 'La temperatura controla la variación del habla (menor = más consistente, mayor = más expresivo). Top-K y Top-P limitan el muestreo de tokens para una salida coherente. La semilla garantiza reproducibilidad.',
+    modelParametersDescription: 'La temperatura controla la variación del habla (menor = más consistente, mayor = más expresivo). Top-K y Top-P limitan el muestreo de tokens para una salida coherente. El SEED garantiza reproducibilidad.',
     examplesTitle: 'Ejemplos de Texto',
     inputLabel: 'Texto para Sintetizar',
     inputPlaceholder: 'Ingresa el texto que deseas convertir en voz...',
@@ -208,7 +289,7 @@ const translations: Translations = {
     topKDescription: 'Limita las opciones de vocabulario',
     topPLabel: 'Top P',
     topPDescription: 'Umbral de muestreo por núcleo',
-    seedLabel: 'Semilla',
+    seedLabel: 'SEED',
     seedDescription: 'Para resultados reproducibles',
     generateButton: 'Generar Voz',
     generatingButton: 'Generando Audio...',
@@ -222,12 +303,12 @@ const translations: Translations = {
     placeholderInstruction: 'Ingresa texto y haz clic en "Generar Voz"',
     tipsTitle: 'Consejos para Mejores Resultados',
     tip1: 'La puntuación importa: Usa comas y puntos para mejorar las pausas naturales',
-    tip2: 'Temperatura: Prueba 0.5-0.7 para discurso claro, 0.7-0.9 para mayor variación natural',
-    tip3: 'Reproducibilidad: Mismo texto + mismos parámetros + misma semilla = audio idéntico',
-    tip4: 'Mejores resultados: El texto en español funciona mejor ya que el modelo fue afinado con muestras en español',
+    tip2: 'Temperatura: Proba 0.5-0.7 para discurso claro, 0.7-0.9 para mayor variación natural',
+    tip3: 'Reproducibilidad: Mismo texto + mismos parámetros + mismo SEED = audio idéntico',
+    tip4: 'Importante: El texto tiene que ser en español ya que el modelo tiene base y fue afinado con muestras en español',
     technicalImplementation: 'Implementación Técnica',
     trainingProcess: 'Proceso de Entrenamiento',
-    trainingProcessDescription: 'XTTS v2 afinado con conjunto de datos de voz personalizado en español usando arquitectura basada en GPT con 10 épocas y optimizador AdamW',
+    trainingProcessDescription: 'XTTS v2 afinado (fined tuned) con conjunto de datos de voz personalizado en español usando arquitectura basada en GPT con 10 épocas y optimizador AdamW',
     modelSize: 'Tamaño del Modelo',
     modelSizeDescription: 'Checkpoint de 5.6GB con ~1.87B parámetros base, optimizado para fonemas y patrones de prosodia del español',
     inferenceSpeed: 'Velocidad de Inferencia',
@@ -235,17 +316,44 @@ const translations: Translations = {
     footer: 'Construido con Coqui TTS, PyTorch, Gradio y React • Modelo alojado en Hugging Face Spaces',
     viewGithub: 'Ver en GitHub',
     technicalDetails: {
-      model: 'Modelo: Coqui XTTS v2 (Afinado)',
-      framework: 'Framework: PyTorch y Biblioteca TTS',
-      training: 'Entrenamiento: Conjunto de datos personalizado de voz en español',
+      model: 'Modelo: Coqui XTTS v2 (fine tuned)',
+      framework: 'Framework: PyTorch y TTS',
+      training: 'Entrenamiento: Conjunto de datos personalizado de voz en español de Argentina',
       deployment: 'Despliegue: API Gradio en Hugging Face Spaces',
     },
     features: {
       feature1: 'Prosodia y entonación natural',
-      feature2: 'Optimizado para español argentino',
+      feature2: 'Optimizado para español Argentino',
       feature3: 'Parámetros de generación ajustables',
       feature4: 'Síntesis en tiempo real',
     },
+    whoIsBeingClonedTitle: '¿De quién es la voz clonada?',
+    whoIsBeingClonedDescription: 'La voz que escucharás en esta demostración pertenece a mi amigo',
+    whoIsBeingClonedText: 'un talentoso creador de contenido y streamer de Buenos Aires, Argentina. Usé una colección de mensajes de voz de WhatsApp para entrenar este modelo, y estoy increíblemente agradecido por su permiso y apoyo para hacer posible este proyecto.',
+    hearOriginalVoice: 'Escucha la voz original',
+    hearOriginalVoiceDescription: 'Escucha una muestra de la voz original utilizada para el entrenamiento:',
+    audioNotSupported: 'Tu navegador no soporta el elemento de audio.',
+    thankYouMessage: '¡Un enorme agradecimiento a PsicogamerRandomStreaming por confiar en mí con su voz y ser parte de este experimento de IA! Su disposición hizo posible esta demostración.',
+    checkOutStreams: '¡Mira sus transmisiones!',
+    supportMessage: 'Si disfrutas esta demostración, considera mostrar apoyo siguiendo y viendo su contenido. ¡Los grandes streamers merecen nuestro apoyo!',
+    beforeYouTestTitle: 'Antes de probarlo',
+    beforeYouTestDescription: 'El objetivo de este proyecto era crear algo',
+    goodEnough: 'suficientemente bueno',
+    beforeYouTestText: 'no perfecto. Esta es una demostración de lo que es posible con tecnología accesible de clonación de voz por IA, entrenada con datos y usando mi propia computadora y GPU (AMD 6950XT).',
+    noteOnAccentTitle: 'Una nota sobre el acento',
+    noteOnAccentText: 'Si entendes español, podes notar que la voz generada a veces suena un poco como "español de España" en lugar de español argentino. Esto es esperado dados los parametros y objectivos de este proyecto. El modelo base XTTS v2 fue entrenado con datos diversos en español, y con solo 45 minutos de audio de entrenamiento, algunas de esas características base ocasionalmente se manifiestan. Es una peculiaridad que demuestra cómo el modelo equilibra entre las características de voz aprendidas durante el fine-tuning y su conocimiento preentrenado.',
+    rememberText: 'Recuerda:',
+    rememberDescription: 'Esto no pretende ser un clon de voz impecable listo para producción. Es un proyecto de aprendizaje que muestra lo que puedes lograr con herramientas modernas de IA, una muestra de voz corta y algo de experimentación. ¡Los resultados son esperables para lo que son, y ese es exactamente el punto!',
+    tryItYourselfTitle: 'Finalmente... ¡probalo vos mismo!',
+    textToSynthesize: 'Texto para sintetizar',
+    enterSpanishText: 'Ingresa texto en español aquí...',
+    controlsSpeechExpressiveness: 'Controla la expresividad del habla',
+    hideShow: 'Ocultar/Mostrar',
+    topKSampling: 'Top-k (Muestreo)',
+    limitsVocabularyChoices: 'Limita las opciones de vocabulario',
+    topPNucleus: 'Top-p (Núcleo)',
+    controlsDiversityOfOutput: 'Controla la diversidad de la salida',
+    randomSeed: 'SEED aleatoria',
   },
 };
 
@@ -432,23 +540,21 @@ export default function VoiceCloneGenerator() {
 
         {/* Who is Being Cloned Section */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700">
-          <h2 className="text-3xl font-bold text-gray-100 mb-6">Who is Being Cloned?</h2>
+          <h2 className="text-3xl font-bold text-gray-100 mb-6">{t.whoIsBeingClonedTitle}</h2>
           
           <div className="bg-gradient-to-r from-gray-900 to-slate-900 rounded-lg p-6 border border-gray-700">
             <div className="space-y-4 text-gray-300">
               <p className="text-lg leading-relaxed">
-                The voice you'll hear in this demo belongs to my friend <strong className="text-cyan-400">PsicogamerRandomStreaming</strong>, 
-                a talented content creator and streamer from Buenos Aires, Argentina. I used a collection of WhatsApp voice messages 
-                to train this model, and I'm incredibly grateful for his permission and support in making this project possible.
+                {t.whoIsBeingClonedDescription} <strong className="text-cyan-400">PsicogamerRandomStreaming</strong>, {t.whoIsBeingClonedText}
               </p>
               
               <div className="bg-gray-900 rounded-lg p-6 mt-4 border border-gray-600">
                 <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <Volume2 className="w-5 h-5" />
-                  Hear the Original Voice
+                  {t.hearOriginalVoice}
                 </h3>
                 <p className="text-sm text-gray-400 mb-3">
-                  Listen to a sample of the original voice used for training:
+                  {t.hearOriginalVoiceDescription}
                 </p>
                 <audio 
                   controls 
@@ -456,14 +562,13 @@ export default function VoiceCloneGenerator() {
                   preload="metadata"
                 >
                   <source src="/sample.wav" type="audio/wav" />
-                  Your browser does not support the audio element.
+                  {t.audioNotSupported}
                 </audio>
               </div>
               
               <div className="bg-gray-900 rounded-lg p-6 mt-4 border-l-4 border-cyan-500">
                 <p className="text-gray-300 mb-4">
-                  A huge thank you to PsicogamerRandomStreaming for trusting me with his voice and being part of this 
-                  AI experiment! His willingness to collaborate made this demonstration possible.
+                  {t.thankYouMessage}
                 </p>
                 
                 <div className="flex items-center gap-3 mt-4">
@@ -476,7 +581,7 @@ export default function VoiceCloneGenerator() {
                     </div>
                   </div>
                   <div className="flex-1">
-                    <p className="text-gray-200 font-semibold">Check out his streams!</p>
+                    <p className="text-gray-200 font-semibold">{t.checkOutStreams}</p>
                     <a 
                       href="https://www.twitch.tv/psicogamerrandomstreaming" 
                       target="_blank" 
@@ -493,8 +598,7 @@ export default function VoiceCloneGenerator() {
               </div>
               
               <p className="text-sm text-gray-400 italic mt-4">
-                If you enjoy this demo, consider showing some support by following and watching his content. 
-                Great streamers deserve our support!
+                {t.supportMessage}
               </p>
             </div>
           </div>
@@ -502,32 +606,23 @@ export default function VoiceCloneGenerator() {
 
         {/* Before You Test It Section */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700">
-          <h2 className="text-3xl font-bold text-gray-100 mb-6">Before You Test It</h2>
+          <h2 className="text-3xl font-bold text-gray-100 mb-6">{t.beforeYouTestTitle}</h2>
           
           <div className="space-y-4 text-gray-300">
             <p className="text-lg leading-relaxed">
-              The goal of this project was to create something <strong>good enough</strong>, not perfect. 
-              This is a demonstration of what's possible with accessible AI voice cloning technology, 
-              trained with minimal data and resources.
+              {t.beforeYouTestDescription} <strong>{t.goodEnough}</strong>, {t.beforeYouTestText}
             </p>
 
             <div className="bg-gradient-to-r from-amber-900/20 to-orange-900/20 rounded-lg p-6 mt-4 border-l-4 border-amber-500">
-              <h3 className="text-lg font-semibold text-amber-400 mb-3">A Note on Accent</h3>
+              <h3 className="text-lg font-semibold text-amber-400 mb-3">{t.noteOnAccentTitle}</h3>
               <p className="text-gray-300 leading-relaxed">
-                If you understand Spanish, you may notice that the generated voice sometimes sounds a bit like 
-                "Spanish from Spain" rather than Argentinean Spanish. This is completely fine and expected 
-                given the scope of this project. The base XTTS v2 model was trained on diverse Spanish data, 
-                and with only 45 minutes of training audio, some of those base characteristics occasionally 
-                come through. It's a quirk that actually demonstrates how the model balances between learned 
-                voice characteristics and its pre-trained knowledge.
+                {t.noteOnAccentText}
               </p>
             </div>
 
             <div className="bg-slate-800 rounded-lg p-6 border border-gray-700">
               <p className="text-gray-300">
-                <strong>Remember:</strong> This isn't meant to be a production-ready, flawless voice clone. 
-                It's a learning project that shows what you can achieve with modern AI tools, a short voice sample, 
-                and some experimentation. The results are impressive for what they are—and that's exactly the point!
+                <strong>{t.rememberText}</strong> {t.rememberDescription}
               </p>
             </div>
           </div>
@@ -535,19 +630,19 @@ export default function VoiceCloneGenerator() {
 
         {/* Main Interface */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-100 mb-6">Finally... try It Yourself!</h2>
+          <h2 className="text-2xl font-bold text-gray-100 mb-6">{t.tryItYourselfTitle}</h2>
           
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Input Section */}
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-semibold text-gray-300 mb-2 block">
-                  Text to Synthesize
+                  {t.textToSynthesize}
                 </label>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Enter Spanish text here..."
+                  placeholder={t.enterSpanishText}
                   className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none text-gray-100 placeholder-gray-500"
                   rows={6}
                 />
@@ -573,7 +668,7 @@ export default function VoiceCloneGenerator() {
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="text-sm font-medium text-gray-300">
-                    Temperature
+                    {t.temperatureLabel}
                   </label>
                   <span className="text-sm font-mono text-cyan-400">{temperature.toFixed(2)}</span>
                 </div>
@@ -587,7 +682,7 @@ export default function VoiceCloneGenerator() {
                   className="w-full accent-cyan-500"
                 />
                 <p className="text-xs text-gray-400 mt-1">
-                  Controls speech expressiveness
+                  {t.controlsSpeechExpressiveness}
                 </p>
               </div>
 
@@ -596,7 +691,7 @@ export default function VoiceCloneGenerator() {
                 className="flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
               >
                 <Settings className="w-4 h-4" />
-                {showAdvanced ? 'Hide' : 'Show'} {t.advancedSettings}
+                {showAdvanced ? t.hideShow.split('/')[0] : t.hideShow.split('/')[1]} {t.advancedSettings}
               </button>
 
               {showAdvanced && (
@@ -604,7 +699,7 @@ export default function VoiceCloneGenerator() {
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-medium text-gray-300">
-                        Top-k (Sampling)
+                        {t.topKSampling}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{topK}</span>
                     </div>
@@ -618,14 +713,14 @@ export default function VoiceCloneGenerator() {
                       className="w-full accent-cyan-500"
                     />
                     <p className="text-xs text-gray-400 mt-1">
-                      Limits vocabulary choices
+                      {t.limitsVocabularyChoices}
                     </p>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-medium text-gray-300">
-                        Top-p (Nucleus)
+                        {t.topPNucleus}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{topP.toFixed(2)}</span>
                     </div>
@@ -639,14 +734,14 @@ export default function VoiceCloneGenerator() {
                       className="w-full accent-cyan-500"
                     />
                     <p className="text-xs text-gray-400 mt-1">
-                      Controls diversity of output
+                      {t.controlsDiversityOfOutput}
                     </p>
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="text-sm font-medium text-gray-300">
-                        Random Seed
+                        {t.randomSeed}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{seed}</span>
                     </div>
@@ -752,7 +847,7 @@ export default function VoiceCloneGenerator() {
 
           {/* Tips Section */}
           <div className="mt-8 bg-slate-800 rounded-lg p-6 border-l-4 border-blue-500">
-            <h3 className="text-lg font-semibold text-blue-400 mb-3">Tips for Best Results</h3>
+            <h3 className="text-lg font-semibold text-blue-400 mb-3">{t.tipsTitle}</h3>
            <ul className="space-y-2 text-gray-300 text-sm">
               <li>• <strong>{t.tip1.split(':')[0]}:</strong> {t.tip1.split(':')[1]}</li>
               <li>• <strong>{t.tip2.split(':')[0]}:</strong> {t.tip2.split(':')[1]}</li>
@@ -764,7 +859,7 @@ export default function VoiceCloneGenerator() {
 
         {/* Technical Details */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mt-8 border border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-100 mb-4">Technical Implementation</h2>
+          <h2 className="text-2xl font-bold text-gray-100 mb-4">{t.technicalImplementation}</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-gray-900 rounded-lg p-5 border border-gray-700">
               <h3 className="font-semibold text-gray-100 mb-2">{t.trainingProcess}</h3>
