@@ -86,6 +86,13 @@ interface Translations {
       feature3: string;
       feature4: string;
     };
+    statusReady: string;
+    statusSleeping: string;
+    statusChecking: string;
+    statusError: string;
+    wakeUpButton: string;
+    wakingUp: string;
+    sleepingMessage: string;
   };
   es: {
     title: string;
@@ -174,6 +181,13 @@ interface Translations {
       feature3: string;
       feature4: string;
     };
+    statusReady: string;
+    statusSleeping: string;
+    statusChecking: string;
+    statusError: string;
+    wakeUpButton: string;
+    wakingUp: string;
+    sleepingMessage: string;
   };
 }
 
@@ -276,6 +290,13 @@ export const translations: Translations = {
     topPNucleus: 'Top-p (Nucleus)',
     controlsDiversityOfOutput: 'Controls diversity of output',
     randomSeed: 'Random Seed',
+    statusReady: 'Model Ready',
+    statusSleeping: 'Model Sleeping',
+    statusChecking: 'Checking Status...',
+    statusError: 'Connection Error',
+    wakeUpButton: 'Wake Up Model',
+    wakingUp: 'Waking up model...',
+    sleepingMessage: 'The AI model is currently sleeping. Click the button above to wake it up (this may take 30-60 seconds).',
   },
   es: {
     title: 'Demostración de Clonación de Voz',
@@ -375,5 +396,12 @@ export const translations: Translations = {
     topPNucleus: 'Top-p (Núcleo)',
     controlsDiversityOfOutput: 'Controla la diversidad de la salida',
     randomSeed: 'SEED aleatoria',
+    statusReady: 'Modelo Listo',
+    statusSleeping: 'Modelo Durmiendo',
+    statusChecking: 'Verificando Estado...',
+    statusError: 'Error de Conexión',
+    wakeUpButton: 'Despertar Modelo',
+    wakingUp: 'Despertando modelo...',
+    sleepingMessage: 'El modelo de IA está durmiendo actualmente. Hace clic en el botón de arriba para despertarlo (puede tardar 30-60 segundos).',
   },
 };
