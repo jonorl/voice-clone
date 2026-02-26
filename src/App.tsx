@@ -87,7 +87,7 @@ export default function VoiceCloneGenerator() {
       const { Client } = await import("@gradio/client");
       
       const client = await Client.connect("jonorl/voice-clone", {
-        token: import.meta.env.VITE_HF_TOKEN,
+        auth: import.meta.env.VITE_HF_TOKEN,
       });
 
       const result = await client.predict("/generate_speech", {

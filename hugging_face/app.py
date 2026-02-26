@@ -1,12 +1,13 @@
 import transformers.pytorch_utils 
 import transformers.generation.configuration_utils as utils
 import os
+import numpy as np
 
 token = os.getenv("HF_TOKEN")
 
 # 1. Fix the isin_mps_friendly error for TTS
 if not hasattr(transformers.pytorch_utils, 'isin_mps_friendly'):
-    transformers.pytorch_utils.isin_mps_friendly = lambda *args, **kwargs: False
+    transformers.pytorch_utils.isin_mps_friendly = lambda *args, **kwargs: np.bool_(False)
 
 # 2. Fix the to_diff_dict error for transformers
 def dummy_to_diff_dict(self): return {}
