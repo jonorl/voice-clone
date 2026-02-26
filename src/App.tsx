@@ -37,7 +37,7 @@ export default function VoiceCloneGenerator() {
     }
 
     const interval = setInterval(() => {
-      setLoadingMessageIndex((prevIndex) => 
+      setLoadingMessageIndex((prevIndex) =>
         (prevIndex + 1) % t.loadingMessages.length
       );
     }, 5000);
@@ -54,7 +54,7 @@ export default function VoiceCloneGenerator() {
     setSpaceStatus("checking");
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone",{
+      await Client.connect("jonorl/voice-clone", {
         token: import.meta.env.VITE_HF_TOKEN,
       });
       setSpaceStatus("ready");
@@ -68,7 +68,7 @@ export default function VoiceCloneGenerator() {
     setWakingUp(true);
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone",{
+      await Client.connect("jonorl/voice-clone", {
         token: import.meta.env.VITE_HF_TOKEN,
       });
       setSpaceStatus("ready");
@@ -87,9 +87,8 @@ export default function VoiceCloneGenerator() {
     setLoadingMessageIndex(0);
 
     try {
-      // Import Gradio client dynamically
       const { Client } = await import("@gradio/client");
-      
+
       const client = await Client.connect("jonorl/voice-clone", {
         token: import.meta.env.VITE_HF_TOKEN,
       });
@@ -102,52 +101,49 @@ export default function VoiceCloneGenerator() {
         seed: seed,
       });
 
-      console.log("Full API response:", result);
-      
-      // The result.data is an array: [audioObject, statusMessage]
-      // audioObject has structure: { url: "https://...", path: "..." }
       const resultData = result.data as any;
-      
-      let audioFileUrl = null;
-      
-      // Handle different possible response structures
-      if (Array.isArray(resultData)) {
-        // If first element is an object with url property
-        if (resultData[0]?.url) {
-          audioFileUrl = resultData[0].url;
-        } 
-        // If first element is a string (direct URL)
-        else if (typeof resultData[0] === 'string') {
-          audioFileUrl = resultData[0];
+      let rawAudioUrl = null;
+
+      // 1. Extract the URL from the response
+      if (Array.isArray(resultData) && resultData[0]?.url) {
+        rawAudioUrl = resultData[0].url;
+      } else if (typeof resultData?.[0] === 'string') {
+        rawAudioUrl = resultData[0];
+      }
+
+      if (!rawAudioUrl) {
+        throw new Error('No audio URL found in response');
+      }
+
+      // 2. Fetch the file as a Blob using the Token
+      const response = await fetch(rawAudioUrl, {
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_HF_TOKEN}`
         }
-      } 
-      // If data itself is an object with url
-      else if (resultData?.url) {
-        audioFileUrl = resultData.url;
-      }
-      
-      console.log("Extracted audio URL:", audioFileUrl);
-      
-      if (audioFileUrl) {
-        setAudioUrl(audioFileUrl);
-        setSpaceStatus("ready");
-        // Auto-play after generation
-        setTimeout(() => {
-          if (audioRef.current) {
-            audioRef.current.play().catch(err => {
-              console.log("Auto-play prevented by browser:", err);
-            });
-          }
-        }, 100);
-      } else {
-        setError('No audio generated. Please try again.');
-        console.error("Could not extract audio URL from:", result);
-      }
+      });
+
+      if (!response.ok) throw new Error("Failed to fetch private audio file from HF");
+
+      const blob = await response.blob();
+      const secureLocalUrl = URL.createObjectURL(blob);
+
+      // 3. Update State and play
+      setAudioUrl(secureLocalUrl);
+      setSpaceStatus("ready");
+
+      // Small delay to ensure the <audio> tag has the new src
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.play().catch(err => {
+            console.log("Auto-play prevented (normal browser behavior):", err);
+          });
+        }
+      }, 150);
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to generate audio: ${errorMessage}`);
-      console.error("Connection Error:", err);
-      console.error("Error details:", JSON.stringify(err, null, 2));
+      setError(`Failed to generate: ${errorMessage}`);
+      console.error("Generation Error:", err);
       setSpaceStatus("sleeping");
     } finally {
       setLoading(false);
@@ -213,7 +209,7 @@ export default function VoiceCloneGenerator() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800">
-            <div className="max-w-6xl mx-auto px-4 py-12">
+      <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Language Toggle Button */}
         <div className="flex justify-end mb-6">
           <button
@@ -237,7 +233,7 @@ export default function VoiceCloneGenerator() {
         {/* Project Description */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700">
           <h2 className="text-3xl font-bold text-gray-100 mb-6">{t.aboutTitle}</h2>
-          
+
           <div className="space-y-4 text-gray-300">
             <p className="text-lg leading-relaxed">
               {t.aboutDescription}
@@ -260,7 +256,7 @@ export default function VoiceCloneGenerator() {
                 <h3 className="text-xl font-semibold text-blue-400 mb-3 flex items-center gap-2">
                   {t.keyFeatures}
                 </h3>
-                 <ul className="space-y-2 text-gray-300">
+                <ul className="space-y-2 text-gray-300">
                   <li>• {t.features.feature1}</li>
                   <li>• {t.features.feature2}</li>
                   <li>• {t.features.feature3}</li>
@@ -290,13 +286,13 @@ export default function VoiceCloneGenerator() {
         {/* Who is Being Cloned Section */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700">
           <h2 className="text-3xl font-bold text-gray-100 mb-6">{t.whoIsBeingClonedTitle}</h2>
-          
+
           <div className="bg-gradient-to-r from-gray-900 to-slate-900 rounded-lg p-6 border border-gray-700">
             <div className="space-y-4 text-gray-300">
               <p className="text-lg leading-relaxed break-words">
                 {t.whoIsBeingClonedDescription} <strong className="text-cyan-400">PsicogamerRandomStreaming</strong>, {t.whoIsBeingClonedText}
               </p>
-              
+
               <div className="bg-gray-900 rounded-lg p-6 mt-4 border border-gray-600">
                 <h3 className="text-lg font-semibold text-cyan-400 mb-3 flex items-center gap-2">
                   <Volume2 className="w-5 h-5" />
@@ -305,8 +301,8 @@ export default function VoiceCloneGenerator() {
                 <p className="text-sm text-gray-400 mb-3">
                   {t.hearOriginalVoiceDescription}
                 </p>
-                <audio 
-                  controls 
+                <audio
+                  controls
                   className="w-full"
                   preload="metadata"
                 >
@@ -314,26 +310,26 @@ export default function VoiceCloneGenerator() {
                   {t.audioNotSupported}
                 </audio>
               </div>
-              
+
               <div className="bg-gray-900 rounded-lg p-6 mt-4 border-l-4 border-cyan-500">
                 <p className="text-lg leading-relaxed break-words text-gray-300 mb-4">
                   {t.thankYouMessage}
                 </p>
-                
+
                 <div className="flex items-center gap-3 mt-4">
                   <div className="flex-shrink-0">
                     <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
                       <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M11.571 4.714h1.715v5.143L15.43 12l-2.286 2.143v5.143h-1.715V9.143L9.286 7z"/>
-                        <path d="M5.143 4.714c-1.429 0-2.572 1.143-2.572 2.572v9.143c0 1.429 1.143 2.571 2.572 2.571h13.714c1.429 0 2.572-1.142 2.572-2.571V7.286c0-1.429-1.143-2.572-2.572-2.572zm0 11.715V7.286h13.714v9.143z"/>
+                        <path d="M11.571 4.714h1.715v5.143L15.43 12l-2.286 2.143v5.143h-1.715V9.143L9.286 7z" />
+                        <path d="M5.143 4.714c-1.429 0-2.572 1.143-2.572 2.572v9.143c0 1.429 1.143 2.571 2.572 2.571h13.714c1.429 0 2.572-1.142 2.572-2.571V7.286c0-1.429-1.143-2.572-2.572-2.572zm0 11.715V7.286h13.714v9.143z" />
                       </svg>
                     </div>
                   </div>
                   <div className="flex-1">
                     <p className="text-gray-200 font-semibold">{t.checkOutStreams}</p>
-                    <a 
-                      href="https://www.twitch.tv/psicogamerrandomstreaming" 
-                      target="_blank" 
+                    <a
+                      href="https://www.twitch.tv/psicogamerrandomstreaming"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm font-medium inline-flex items-center gap-1 mt-1 break-all"
                     >
@@ -345,7 +341,7 @@ export default function VoiceCloneGenerator() {
                   </div>
                 </div>
               </div>
-              
+
               <p className="text-sm text-gray-400 italic mt-4">
                 {t.supportMessage}
               </p>
@@ -356,7 +352,7 @@ export default function VoiceCloneGenerator() {
         {/* Before You Test It Section */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8 border border-gray-700">
           <h2 className="text-3xl font-bold text-gray-100 mb-6">{t.beforeYouTestTitle}</h2>
-          
+
           <div className="space-y-4 text-gray-300">
             <p className="text-lg leading-relaxed">
               {t.beforeYouTestDescription} <strong>{t.goodEnough}</strong>, {t.beforeYouTestText}
@@ -409,7 +405,7 @@ export default function VoiceCloneGenerator() {
         {/* Main Interface */}
         <div className="bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-700">
           <h2 className="text-2xl font-bold text-gray-100 mb-6">{t.tryItYourselfTitle}</h2>
-          
+
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Input Section */}
             <div className="space-y-6">
@@ -432,14 +428,14 @@ export default function VoiceCloneGenerator() {
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {examples.map((example, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => loadExample(example)}
-                  className="text-left bg-gray-900 hover:bg-gray-700 text-gray-300 text-sm px-4 py-3 rounded-lg border border-gray-600 transition-colors"
-                >
-                  {example.text}
-                </button>
-              ))}
+                    <button
+                      key={idx}
+                      onClick={() => loadExample(example)}
+                      className="text-left bg-gray-900 hover:bg-gray-700 text-gray-300 text-sm px-4 py-3 rounded-lg border border-gray-600 transition-colors"
+                    >
+                      {example.text}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -559,7 +555,7 @@ export default function VoiceCloneGenerator() {
             {/* Output Section */}
             <div>
               <label className="text-sm font-semibold text-gray-300 mb-2 block">
-                 {t.outputLabel}
+                {t.outputLabel}
               </label>
               <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-lg p-6 min-h-[400px] border-2 border-gray-700 flex flex-col items-center justify-center">
                 {loading && (
@@ -574,7 +570,7 @@ export default function VoiceCloneGenerator() {
                     <p className="text-gray-500 text-xs">{t.processingTime}</p>
                   </div>
                 )}
-                
+
                 {error && (
                   <div className="w-full">
                     <div className="bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg">
@@ -583,7 +579,7 @@ export default function VoiceCloneGenerator() {
                     </div>
                   </div>
                 )}
-                
+
                 {error && (
                   <div className="w-full">
                     <div className="bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg">
@@ -592,7 +588,7 @@ export default function VoiceCloneGenerator() {
                     </div>
                   </div>
                 )}
-                
+
                 {audioUrl && !loading && (
                   <div className="w-full space-y-4">
                     <div className="flex items-center justify-center mb-4">
@@ -600,16 +596,16 @@ export default function VoiceCloneGenerator() {
                         <Volume2 className="w-8 h-8 text-white" />
                       </div>
                     </div>
-                    
+
                     <audio
                       ref={audioRef}
                       controls
                       src={audioUrl}
                       className="w-full"
                     />
-                    
+
                     <div className="bg-green-900/30 border border-green-700 text-green-300 px-4 py-3 rounded-lg text-sm">
-                       {t.successMessage}
+                      {t.successMessage}
                     </div>
 
                     <a
@@ -621,7 +617,7 @@ export default function VoiceCloneGenerator() {
                     </a>
                   </div>
                 )}
-                
+
                 {!loading && !error && !audioUrl && (
                   <div className="flex flex-col items-center justify-center h-full text-gray-500">
                     <Mic2 className="w-16 h-16 mb-4 opacity-50" />
@@ -640,7 +636,7 @@ export default function VoiceCloneGenerator() {
           {/* Tips Section */}
           <div className="mt-8 bg-slate-800 rounded-lg p-6 border-l-4 border-blue-500">
             <h3 className="text-lg font-semibold text-blue-400 mb-3">{t.tipsTitle}</h3>
-           <ul className="space-y-2 text-gray-300 text-sm">
+            <ul className="space-y-2 text-gray-300 text-sm">
               <li>• <strong>{t.tip1.split(':')[0]}:</strong> {t.tip1.split(':')[1]}</li>
               <li>• <strong>{t.tip2.split(':')[0]}:</strong> {t.tip2.split(':')[1]}</li>
               <li>• <strong>{t.tip3.split(':')[0]}:</strong> {t.tip3.split(':')[1]}</li>
@@ -660,7 +656,7 @@ export default function VoiceCloneGenerator() {
               </p>
             </div>
             <div className="bg-gray-900 rounded-lg p-5 border border-gray-700">
-             <h3 className="font-semibold text-gray-100 mb-2">{t.modelSize}</h3>
+              <h3 className="font-semibold text-gray-100 mb-2">{t.modelSize}</h3>
               <p className="text-sm text-gray-400">
                 {t.modelSizeDescription}
               </p>
@@ -677,9 +673,9 @@ export default function VoiceCloneGenerator() {
         <div className="mt-12 border-t border-gray-700 pt-8">
           <div className="text-center space-y-4">
             <p className="text-sm text-gray-400">
-              {t.footer}            
+              {t.footer}
             </p>
-                        <div className="flex items-center justify-center gap-6 text-sm">
+            <div className="flex items-center justify-center gap-6 text-sm">
               <a
                 href="https://jonathan-orlowski.pages.dev/"
                 target="_blank"
@@ -699,7 +695,7 @@ export default function VoiceCloneGenerator() {
                 </svg>
                 GitHub
               </a>
-                            <a
+              <a
                 href="https://huggingface.co/spaces/jonorl/simpsons"
                 target="_blank"
                 rel="noopener noreferrer"
