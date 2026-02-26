@@ -54,7 +54,9 @@ export default function VoiceCloneGenerator() {
     setSpaceStatus("checking");
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone");
+      await Client.connect("jonorl/voice-clone",{
+        auth: import.meta.env.VITE_HF_TOKEN,
+      });
       setSpaceStatus("ready");
     } catch (err) {
       console.error("Status check error:", err);
@@ -66,7 +68,9 @@ export default function VoiceCloneGenerator() {
     setWakingUp(true);
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone");
+      await Client.connect("jonorl/voice-clone",{
+        auth: import.meta.env.VITE_HF_TOKEN,
+      });
       setSpaceStatus("ready");
     } catch (err) {
       console.error("Wake up error:", err);
