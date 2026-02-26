@@ -55,7 +55,7 @@ export default function VoiceCloneGenerator() {
     try {
       const { Client } = await import("@gradio/client");
       await Client.connect("jonorl/voice-clone",{
-        auth: import.meta.env.VITE_HF_TOKEN,
+        token: import.meta.env.VITE_HF_TOKEN,
       });
       setSpaceStatus("ready");
     } catch (err) {
@@ -69,7 +69,7 @@ export default function VoiceCloneGenerator() {
     try {
       const { Client } = await import("@gradio/client");
       await Client.connect("jonorl/voice-clone",{
-        auth: import.meta.env.VITE_HF_TOKEN,
+        token: import.meta.env.VITE_HF_TOKEN,
       });
       setSpaceStatus("ready");
     } catch (err) {
@@ -91,7 +91,7 @@ export default function VoiceCloneGenerator() {
       const { Client } = await import("@gradio/client");
       
       const client = await Client.connect("jonorl/voice-clone", {
-        auth: import.meta.env.VITE_HF_TOKEN,
+        token: import.meta.env.VITE_HF_TOKEN,
       });
 
       const result = await client.predict("/generate_speech", {
