@@ -677,7 +677,7 @@ export default function VoiceCloneGenerator() {
             </p>
             <div className="flex items-center justify-center gap-6 text-sm">
               <a
-                href="https://jonathan-orlowski.pages.dev/"
+                href="https://jonathan-orlowski.dev/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-yellow-400 transition-colors"
@@ -696,7 +696,7 @@ export default function VoiceCloneGenerator() {
                 GitHub
               </a>
               <a
-                href="https://huggingface.co/spaces/jonorl/simpsons"
+                href="https://huggingface.co/spaces/jonorl"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-2"
