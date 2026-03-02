@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Loader2, Mic2, Volume2, Settings, AlertCircle, Power } from 'lucide-react';
 import { SiHuggingface } from "react-icons/si";
 import { translations } from './translations'
-import sampleWav from './assets/sample.wav';
+import sampleWav from '../assets/sample.wav';
 
 type Language = 'en' | 'es';
 
