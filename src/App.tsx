@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Loader2, Mic2, Volume2, Settings, AlertCircle, Power } from 'lucide-react';
 import { SiHuggingface } from "react-icons/si";
 import { translations } from './translations'
+import sampleWav from './assets/sample.wav';
 
 type Language = 'en' | 'es';
 
@@ -306,7 +307,7 @@ export default function VoiceCloneGenerator() {
                   className="w-full"
                   preload="metadata"
                 >
-                  <source src="/sample.wav" type="audio/wav" />
+                  <source src={sampleWav} type="audio/wav" />
                   {t.audioNotSupported}
                 </audio>
               </div>
