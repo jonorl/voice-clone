@@ -4,6 +4,10 @@ AI-powered **Argentinean Spanish voice cloning** using **XTTS v2**, fine-tuned t
 
 ---
 
+## New !!! Android app
+
+The New Android app is published on this [repo](https://github.com/jonorl/voice-clone-mobile)
+
 ## Key Features
 
 * **High‑quality Spanish synthesis** using a fine‑tuned XTTS v2 model
