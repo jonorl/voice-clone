@@ -270,7 +270,7 @@ if __name__ == "__main__":
     while attempts < max_attempts:
         try:
             print(f"Attempting to launch on port: {port}")
-            demo.launch(server_name="0.0.0.0", server_port=port, share=False)
+            demo.launch(server_name="0.0.0.0", server_port=port, ssr_mode=False, share=False)
             break # Exit loop if launch is successful
         except OSError:
             print(f"Port {port} is busy, trying {port + 1}...")
