@@ -55,9 +55,7 @@ export default function VoiceCloneGenerator() {
     setSpaceStatus("checking");
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone", {
-        token: import.meta.env.VITE_HF_TOKEN,
-      });
+      await Client.connect("https://voice.jonathan-orlowski.dev");
       setSpaceStatus("ready");
     } catch (err) {
       console.error("Status check error:", err);
@@ -69,9 +67,7 @@ export default function VoiceCloneGenerator() {
     setWakingUp(true);
     try {
       const { Client } = await import("@gradio/client");
-      await Client.connect("jonorl/voice-clone", {
-        token: import.meta.env.VITE_HF_TOKEN,
-      });
+      await Client.connect("https://voice.jonathan-orlowski.dev");
       setSpaceStatus("ready");
     } catch (err) {
       console.error("Wake up error:", err);
@@ -90,9 +86,7 @@ export default function VoiceCloneGenerator() {
     try {
       const { Client } = await import("@gradio/client");
 
-      const client = await Client.connect("jonorl/voice-clone", {
-        token: import.meta.env.VITE_HF_TOKEN,
-      });
+      const client = await Client.connect("https://voice.jonathan-orlowski.dev");
 
       const result = await client.predict("/generate_speech", {
         text: text,
@@ -117,11 +111,7 @@ export default function VoiceCloneGenerator() {
       }
 
       // 2. Fetch the file as a Blob using the Token
-      const response = await fetch(rawAudioUrl, {
-        headers: {
-          'Authorization': `Bearer ${import.meta.env.VITE_HF_TOKEN}`
-        }
-      });
+      const response = await fetch(rawAudioUrl);
 
       if (!response.ok) throw new Error("Failed to fetch private audio file from HF");
 
