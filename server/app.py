@@ -14,22 +14,16 @@ def dummy_to_diff_dict(self): return {}
 utils.GenerationConfig.to_diff_dict = dummy_to_diff_dict
 
 # 3. Rest of your imports
-import os  
 import torch  
 import scipy.io.wavfile  
 import gradio as gr  
 import logging  
-from huggingface_hub import snapshot_download
 
 # Suppress transformers warnings
 logging.getLogger("transformers.generation.configuration_utils").setLevel(logging.ERROR)
 
-import transformers.pytorch_utils 
-
-# Now you can check the attribute
 if not hasattr(transformers.pytorch_utils, 'isin_mps_friendly'):
     transformers.pytorch_utils.isin_mps_friendly = lambda x: False
-
 
 def dummy_to_diff_dict(self): return {}
 utils.GenerationConfig.to_diff_dict = dummy_to_diff_dict
@@ -39,35 +33,13 @@ from TTS.tts.models.xtts import Xtts
 
 print("Loading model files...")
 
-# Download base XTTS v2 model
-base_model_path = snapshot_download(
-    repo_id="coqui/XTTS-v2",
-    token=token,
-    allow_patterns=["*.json", "vocab.json", "*.pth"],
-)
-
-checkpoint_path = snapshot_download(
-    repo_id="jonorl/pepe", 
-    allow_patterns=["*.pth"],
-)
-
-speaker_repo = snapshot_download(
-    repo_id="jonorl/pepe", 
-    allow_patterns=["*.wav"],
-)
-
-# Find the speaker wav file
-speaker_wav = None
-for root, dirs, files in os.walk(speaker_repo):
-    for file in files:
-        if file.endswith('.wav'):
-            speaker_wav = os.path.join(root, file)
-            break
-    if speaker_wav:
-        break
+# Local paths — no downloads
+base_model_path = os.path.join("models", "coqui")
+checkpoint_file = os.path.join("models", "best_model_822.pth")
+speaker_wav = os.path.join("models", "sample5.wav")
 
 print(f"Base model path: {base_model_path}")
-print(f"Checkpoint path: {checkpoint_path}")
+print(f"Checkpoint path: {checkpoint_file}")
 print(f"Speaker wav: {speaker_wav}")
 
 # Load config
@@ -80,16 +52,6 @@ config.model_args.mel_norm_file = os.path.join(base_model_path, "mel_stats.pth")
 # Initialize model
 print("Initializing model...")
 model = Xtts.init_from_config(config)
-
-# Find the checkpoint file
-checkpoint_file = None
-for root, dirs, files in os.walk(checkpoint_path):
-    for file in files:
-        if file.endswith('.pth'):
-            checkpoint_file = os.path.join(root, file)
-            break
-    if checkpoint_file:
-        break
 
 print(f"Loading checkpoint from: {checkpoint_file}")
 
