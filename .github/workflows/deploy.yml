@@ -6,6 +6,8 @@ on:
     paths:
       - 'server/**'
       - 'Dockerfile'
+  workflow_dispatch:
+
 
 jobs:
   build-and-deploy:
