@@ -4,6 +4,7 @@ import os
 import numpy as np
 import tempfile
 import logging
+import gc
 
 # ── Monkey-patches (applied once, before any other imports) ──────────────────
 if not hasattr(transformers.pytorch_utils, 'isin_mps_friendly'):
@@ -76,8 +77,11 @@ def get_model():
     return _model, _gpt_cond_latent, _speaker_embedding
 
 # ── Inference ─────────────────────────────────────────────────────────────────
+
+
+import gc
+
 def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
-    """Generate speech from text using the fine-tuned voice clone model."""
     if not text.strip():
         return None, "Please enter some text to synthesize."
 
@@ -87,6 +91,7 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark     = False
 
+    output_path = None
     try:
         print(f"Generating audio for: {text[:50]}...")
 
@@ -102,9 +107,9 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
             top_k=int(top_k),
         )
 
-        # Write to a unique temp file — safe for concurrent requests
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
             output_path = f.name
+
         scipy.io.wavfile.write(output_path, 24000, outputs["wav"])
 
         return output_path, "✅ Audio generated successfully!"
@@ -113,6 +118,16 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
         error_msg = f"❌ Error generating audio: {str(e)}"
         print(error_msg)
         return None, error_msg
+
+    finally:
+        # Explicitly free inference tensors
+        try:
+            del outputs
+        except NameError:
+            pass
+        gc.collect()
+        if DEVICE == "cuda":
+            torch.cuda.empty_cache()
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
