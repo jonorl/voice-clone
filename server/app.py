@@ -32,21 +32,16 @@ DEVICE          = "cuda" if torch.cuda.is_available() else "cpu"
 if DEVICE == "cpu":
     print("GPU not available, using CPU (inference will be slower)")
     
-torch.cuda.empty_cache() if DEVICE == "cuda" else None
+gc.collect()
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
+    torch.cuda.ipc_collect()
 
 
 # ── Lazy model state ─────────────────────────────────────────────────────────
 _model               = None
 _gpt_cond_latent     = None
 _speaker_embedding   = None
-
-def cleanup_memory():
-    global _model, _gpt_cond_latent, _speaker_embedding
-    _model = _gpt_cond_latent = _speaker_embedding = None
-    gc.collect()
-    if DEVICE == "cuda":
-        torch.cuda.empty_cache()
-        torch.cuda.ipc_collect()
 
 def get_model():
     """Load model and pre-compute speaker latents on first call, then cache."""
@@ -89,18 +84,11 @@ def get_model():
 
 # ── Inference ─────────────────────────────────────────────────────────────────
 
-
-import gc
-
 def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
     if not text.strip():
         return None, "Please enter some text to synthesize."
 
     torch.manual_seed(int(seed))
-    if DEVICE == "cuda":
-        torch.cuda.manual_seed_all(int(seed))
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark     = False
 
     output_path = None
     try:
@@ -126,34 +114,32 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
         return output_path, "✅ Audio generated successfully!"
 
     except Exception as e:
-        error_msg = f"❌ Error generating audio: {str(e)}"
-        print(error_msg)
-        return None, error_msg
+        return None, f"❌ Error: {str(e)}"
 
     finally:
-      global _model, _gpt_cond_latent, _speaker_embedding
-
-      if _model is not None:
-          del _model
-          _model = None
-      if _gpt_cond_latent is not None:
-          del _gpt_cond_latent
-          _gpt_cond_latent = None
-      if _speaker_embedding is not None:
-          del _speaker_embedding
-          _speaker_embedding = None
-      
-      if 'outputs' in locals():
-          del outputs
-      
-      gc.collect()
-      
-      if DEVICE == "cuda":
-          torch.cuda.empty_cache()
-          torch.cuda.ipc_collect()
-      
-      cleanup_memory()
-      print("Memory cleanup performed")
+        # Very aggressive cleanup for CPU
+        global _model, _gpt_cond_latent, _speaker_embedding
+        
+        _model = _gpt_cond_latent = _speaker_embedding = None
+        
+        for var in ['outputs', 'model', 'gpt_cond_latent', 'speaker_embedding']:
+            if var in locals():
+                del locals()[var]
+        
+        gc.collect()
+        torch.cuda.empty_cache() if DEVICE == "cuda" else None
+        
+        # Extra CPU cleanup
+        if DEVICE == "cpu":
+            for obj in list(gc.get_objects()):
+                try:
+                    if torch.is_tensor(obj):
+                        del obj
+                except:
+                    pass
+            gc.collect()
+        
+        print("Memory cleanup done")
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
