@@ -19,7 +19,6 @@ export default function VoiceCloneGenerator() {
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
   const [error, setError] = useState('');
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [spaceStatus, setSpaceStatus] = useState<'checking' | 'ready' | 'sleeping' | 'error'>('checking');
 
   interface Example {
     text: string;
@@ -88,7 +87,6 @@ export default function VoiceCloneGenerator() {
 
       // 3. Update State and play
       setAudioUrl(secureLocalUrl);
-      setSpaceStatus("ready");
 
       // Small delay to ensure the <audio> tag has the new src
       setTimeout(() => {
@@ -103,7 +101,6 @@ export default function VoiceCloneGenerator() {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
       setError(`Failed to generate: ${errorMessage}`);
       console.error("Generation Error:", err);
-      setSpaceStatus("sleeping");
     } finally {
       setLoading(false);
     }
@@ -426,7 +423,6 @@ export default function VoiceCloneGenerator() {
 
               <button
                 onClick={handleGenerate}
-                disabled={loading || !text.trim() || spaceStatus !== "ready"}
                 className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-cyan-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
