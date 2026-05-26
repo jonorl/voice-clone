@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Loader2, Mic2, Volume2, Settings, AlertCircle, Power } from 'lucide-react';
+import { Loader2, Mic2, Volume2, Settings } from 'lucide-react';
 import { SiHuggingface } from "react-icons/si";
 import { translations } from './translations'
 import sampleWav from '../assets/sample.wav';
@@ -20,7 +20,6 @@ export default function VoiceCloneGenerator() {
   const [error, setError] = useState('');
   const audioRef = useRef<HTMLAudioElement>(null);
   const [spaceStatus, setSpaceStatus] = useState<'checking' | 'ready' | 'sleeping' | 'error'>('checking');
-  const [wakingUp, setWakingUp] = useState(false);
 
   interface Example {
     text: string;
@@ -45,37 +44,6 @@ export default function VoiceCloneGenerator() {
 
     return () => clearInterval(interval);
   }, [loading, t.loadingMessages.length]);
-
-  // Check space status on mount
-  useEffect(() => {
-    checkSpaceStatus();
-  }, []);
-
-  const checkSpaceStatus = async () => {
-    setSpaceStatus("checking");
-    try {
-      const { Client } = await import("@gradio/client");
-      await Client.connect("https://voice.jonathan-orlowski.dev");
-      setSpaceStatus("ready");
-    } catch (err) {
-      console.error("Status check error:", err);
-      setSpaceStatus("sleeping");
-    }
-  };
-
-  const wakeUpSpace = async () => {
-    setWakingUp(true);
-    try {
-      const { Client } = await import("@gradio/client");
-      await Client.connect("https://voice.jonathan-orlowski.dev");
-      setSpaceStatus("ready");
-    } catch (err) {
-      console.error("Wake up error:", err);
-      setSpaceStatus("error");
-    } finally {
-      setWakingUp(false);
-    }
-  };
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -157,45 +125,6 @@ export default function VoiceCloneGenerator() {
 
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'es' : 'en');
-  };
-
-  const getStatusColor = () => {
-    switch (spaceStatus) {
-      case "ready":
-        return "bg-green-900/30 border-green-700/50 text-green-300";
-      case "sleeping":
-        return "bg-yellow-900/30 border-yellow-700/50 text-yellow-300";
-      case "checking":
-        return "bg-blue-900/30 border-blue-700/50 text-blue-300";
-      case "error":
-        return "bg-red-900/30 border-red-700/50 text-red-300";
-    }
-  };
-
-  const getStatusIcon = () => {
-    switch (spaceStatus) {
-      case "ready":
-        return <Power className="w-4 h-4" />;
-      case "sleeping":
-        return <AlertCircle className="w-4 h-4" />;
-      case "checking":
-        return <Loader2 className="w-4 h-4 animate-spin" />;
-      case "error":
-        return <AlertCircle className="w-4 h-4" />;
-    }
-  };
-
-  const getStatusText = () => {
-    switch (spaceStatus) {
-      case "ready":
-        return t.statusReady || "Model Ready";
-      case "sleeping":
-        return t.statusSleeping || "Model Sleeping";
-      case "checking":
-        return t.statusChecking || "Checking Status...";
-      case "error":
-        return t.statusError || "Connection Error";
-    }
   };
 
   return (
@@ -362,35 +291,6 @@ export default function VoiceCloneGenerator() {
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Status Banner */}
-        <div className={`rounded-2xl p-6 mb-8 border-2 ${getStatusColor()}`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {getStatusIcon()}
-              <span className="font-medium text-sm">{getStatusText()}</span>
-            </div>
-            {spaceStatus === "sleeping" && !wakingUp && (
-              <button
-                onClick={wakeUpSpace}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
-              >
-                {t.wakeUpButton || "Wake Up Model"}
-              </button>
-            )}
-            {wakingUp && (
-              <span className="text-sm flex items-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                {t.wakingUp || "Waking up model..."}
-              </span>
-            )}
-          </div>
-          {spaceStatus === "sleeping" && (
-            <p className="text-sm mt-3 opacity-90">
-              {t.sleepingMessage || "The AI model is currently sleeping. Click the button above to wake it up (this may take 30-60 seconds)."}
-            </p>
-          )}
         </div>
 
         {/* Main Interface */}
