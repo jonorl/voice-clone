@@ -1,7 +1,6 @@
 import transformers.pytorch_utils
 import transformers.generation.configuration_utils as utils
 import os
-import multiprocessing
 import numpy as np
 import tempfile
 import logging
@@ -32,12 +31,6 @@ DEVICE          = "cuda" if torch.cuda.is_available() else "cpu"
 
 if DEVICE == "cpu":
     print("GPU not available, using CPU (inference will be slower)")
-    
-gc.collect()
-if torch.cuda.is_available():
-    torch.cuda.empty_cache()
-    torch.cuda.ipc_collect()
-
 
 # ── Lazy model state ─────────────────────────────────────────────────────────
 _model               = None
@@ -85,54 +78,54 @@ def get_model():
 
 # ── Inference ─────────────────────────────────────────────────────────────────
 
-def _inference_worker(text, temperature, top_p, top_k, seed, result_queue):
+
+import gc
+
+def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
+    if not text.strip():
+        return None, "Please enter some text to synthesize."
+
+    torch.manual_seed(int(seed))
+    if DEVICE == "cuda":
+        torch.cuda.manual_seed_all(int(seed))
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark     = False
+
+    output_path = None
     try:
-        torch.manual_seed(int(seed))
+        print(f"Generating audio for: {text[:50]}...")
+
         model, gpt_cond_latent, speaker_embedding = get_model()
-        
+
         outputs = model.inference(
-            text, language="es",
+            text,
+            language="es",
             gpt_cond_latent=gpt_cond_latent,
             speaker_embedding=speaker_embedding,
             temperature=float(temperature),
             top_p=float(top_p),
             top_k=int(top_k),
         )
-        
+
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
             output_path = f.name
+
         scipy.io.wavfile.write(output_path, 24000, outputs["wav"])
-        
-        result_queue.put((output_path, "✅ Audio generated successfully!"))
-        
+
+        return output_path, "✅ Audio generated successfully!"
+
     except Exception as e:
-        result_queue.put((None, f"❌ Error: {str(e)}"))
+        error_msg = f"❌ Error generating audio: {str(e)}"
+        print(error_msg)
+        return None, error_msg
+
     finally:
-        # Cleanup inside worker
-        globals()['_model'] = globals()['_gpt_cond_latent'] = globals()['_speaker_embedding'] = None
+        global _model, _gpt_cond_latent, _speaker_embedding
+        del outputs
+        _model = None
+        _gpt_cond_latent = None
+        _speaker_embedding = None
         gc.collect()
-
-def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
-    if not text.strip():
-        return None, "Please enter some text to synthesize."
-
-    result_queue = multiprocessing.Queue()
-    p = multiprocessing.Process(
-        target=_inference_worker,
-        args=(text, temperature, top_p, top_k, seed, result_queue)
-    )
-    p.start()
-    p.join(timeout=120)  # 2 minute timeout
-
-    if p.is_alive():
-        p.terminate()
-        p.join()
-
-    try:
-        output_path, message = result_queue.get(timeout=5)
-        return output_path, message
-    except:
-        return None, "❌ Timeout or error during generation"
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
