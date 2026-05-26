@@ -120,12 +120,28 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
         return None, error_msg
 
     finally:
-        global _model, _gpt_cond_latent, _speaker_embedding
-        del outputs
-        _model = None
-        _gpt_cond_latent = None
-        _speaker_embedding = None
-        gc.collect()
+            # Clear local outputs if they exist
+            if 'outputs' in locals():
+                del outputs
+            
+            # Clear the global model cache completely
+            global _model, _gpt_cond_latent, _speaker_embedding
+            _model = None
+            _gpt_cond_latent = None
+            _speaker_embedding = None
+            
+            # Force PyTorch and Python to release allocations back to the system
+            gc.collect()
+            if DEVICE == "cuda":
+                torch.cuda.empty_cache()
+            else:
+                # Crucial for CPU deployments under Docker memory limits
+                import ctypes
+                try:
+                    libc = ctypes.CDLL("libc.so.6")
+                    libc.malloc_trim(0)
+                except Exception:
+                    pass
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
