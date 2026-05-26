@@ -1,6 +1,7 @@
 import transformers.pytorch_utils
 import transformers.generation.configuration_utils as utils
 import os
+import sys
 import numpy as np
 import tempfile
 import logging
@@ -140,6 +141,7 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
             gc.collect()
         
         print("Memory cleanup done")
+        os.execv(sys.executable, ['python'] + sys.argv)
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:

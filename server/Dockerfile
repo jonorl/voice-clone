@@ -15,4 +15,4 @@ COPY . .
 ENV CUDA_VISIBLE_DEVICES=""
 EXPOSE 7860
 
-CMD ["python", "app.py"]
+CMD ["python", "-X tracemalloc", "app.py"]
