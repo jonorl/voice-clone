@@ -120,14 +120,12 @@ def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
         return None, error_msg
 
     finally:
-        # Explicitly free inference tensors
-        try:
-            del outputs
-        except NameError:
-            pass
+        global _model, _gpt_cond_latent, _speaker_embedding
+        del outputs
+        _model = None
+        _gpt_cond_latent = None
+        _speaker_embedding = None
         gc.collect()
-        if DEVICE == "cuda":
-            torch.cuda.empty_cache()
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
