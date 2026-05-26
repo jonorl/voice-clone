@@ -1,147 +1,41 @@
-import transformers.pytorch_utils
-import transformers.generation.configuration_utils as utils
-import os
-import numpy as np
-import tempfile
-import logging
-import gc
-
-# ── Monkey-patches (applied once, before any other imports) ──────────────────
-if not hasattr(transformers.pytorch_utils, 'isin_mps_friendly'):
-    transformers.pytorch_utils.isin_mps_friendly = lambda *args, **kwargs: np.bool_(False)
-
-def _dummy_to_diff_dict(self): return {}
-utils.GenerationConfig.to_diff_dict = _dummy_to_diff_dict
-
-logging.getLogger("transformers.generation.configuration_utils").setLevel(logging.ERROR)
-
-# ── Core imports ─────────────────────────────────────────────────────────────
-import torch
-import scipy.io.wavfile
 import gradio as gr
+import subprocess
+import os
 
-from TTS.tts.configs.xtts_config import XttsConfig
-from TTS.tts.models.xtts import Xtts
-
-# ── Paths ────────────────────────────────────────────────────────────────────
-BASE_MODEL_PATH = os.path.join("models", "coqui")
-CHECKPOINT_FILE = os.path.join("models", "best_model_822.pth")
-SPEAKER_WAV     = os.path.join("models", "sample5.wav")
-DEVICE          = "cuda" if torch.cuda.is_available() else "cpu"
-
-if DEVICE == "cpu":
-    print("GPU not available, using CPU (inference will be slower)")
-
-# ── Lazy model state ─────────────────────────────────────────────────────────
-_model               = None
-_gpt_cond_latent     = None
-_speaker_embedding   = None
-
-def get_model():
-    """Load model and pre-compute speaker latents on first call, then cache."""
-    global _model, _gpt_cond_latent, _speaker_embedding
-
-    if _model is not None:
-        return _model, _gpt_cond_latent, _speaker_embedding
-
-    print("Loading model on first request — this will take a moment...")
-
-    config = XttsConfig()
-    config.load_json(os.path.join(BASE_MODEL_PATH, "config.json"))
-    config.model_args.tokenizer_file  = os.path.join(BASE_MODEL_PATH, "vocab.json")
-    config.model_args.dvae_checkpoint = os.path.join(BASE_MODEL_PATH, "dvae.pth")
-    config.model_args.mel_norm_file   = os.path.join(BASE_MODEL_PATH, "mel_stats.pth")
-
-    model = Xtts.init_from_config(config)
-    model.load_checkpoint(
-        config,
-        checkpoint_path=CHECKPOINT_FILE,
-        vocab_path=os.path.join(BASE_MODEL_PATH, "vocab.json"),
-        use_deepspeed=False,
-    )
-
-    if DEVICE == "cuda":
-        model.cuda()
-
-    print("Computing speaker conditioning latents...")
-    gpt_cond_latent, speaker_embedding = model.get_conditioning_latents(
-        audio_path=SPEAKER_WAV,
-        gpt_cond_len=3,
-    )
-
-    _model             = model
-    _gpt_cond_latent   = gpt_cond_latent
-    _speaker_embedding = speaker_embedding
-
-    print("Model ready!")
-    return _model, _gpt_cond_latent, _speaker_embedding
-
-# ── Inference ─────────────────────────────────────────────────────────────────
-
-
-import gc
-
-def generate_speech(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
+def generate_speech_stateless(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
     if not text.strip():
-        return None, "Please enter some text to synthesize."
+        return None, "Please enter some text."
 
-    torch.manual_seed(int(seed))
-    if DEVICE == "cuda":
-        torch.cuda.manual_seed_all(int(seed))
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark     = False
+    # A fixed output target for the isolated worker script
+    output_wav = "/tmp/output.wav"
+    if os.path.exists(output_wav):
+        os.remove(output_wav)
 
-    output_path = None
     try:
-        print(f"Generating audio for: {text[:50]}...")
+        # Spin up a dedicated, isolated Python process to run inference
+        cmd = [
+            "python3", "worker.py",
+            "--text", text,
+            "--temperature", str(temperature),
+            "--top_p", str(top_p),
+            "--top_k", str(top_k),
+            "--seed", str(seed),
+            "--output", output_wav
+        ]
+        
+        # This blocks until the worker completely finishes and terminates
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        print(result.stdout) # Forward stdout to docker logs
 
-        model, gpt_cond_latent, speaker_embedding = get_model()
+        if os.path.exists(output_wav):
+            return output_wav, "✅ Audio generated successfully!"
+        else:
+            return None, "❌ Error: Worker finished but output file was not found."
 
-        outputs = model.inference(
-            text,
-            language="es",
-            gpt_cond_latent=gpt_cond_latent,
-            speaker_embedding=speaker_embedding,
-            temperature=float(temperature),
-            top_p=float(top_p),
-            top_k=int(top_k),
-        )
-
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-            output_path = f.name
-
-        scipy.io.wavfile.write(output_path, 24000, outputs["wav"])
-
-        return output_path, "✅ Audio generated successfully!"
-
-    except Exception as e:
-        error_msg = f"❌ Error generating audio: {str(e)}"
+    except subprocess.CalledProcessError as e:
+        error_msg = f"❌ Inference process crashed:\n{e.stderr}"
         print(error_msg)
         return None, error_msg
-
-    finally:
-            # Clear local outputs if they exist
-            if 'outputs' in locals():
-                del outputs
-            
-            # Clear the global model cache completely
-            global _model, _gpt_cond_latent, _speaker_embedding
-            _model = None
-            _gpt_cond_latent = None
-            _speaker_embedding = None
-            
-            # Force PyTorch and Python to release allocations back to the system
-            gc.collect()
-            if DEVICE == "cuda":
-                torch.cuda.empty_cache()
-            else:
-                # Crucial for CPU deployments under Docker memory limits
-                import ctypes
-                try:
-                    libc = ctypes.CDLL("libc.so.6")
-                    libc.malloc_trim(0)
-                except Exception:
-                    pass
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
@@ -191,7 +85,7 @@ with gr.Blocks(title="Voice Clone - Pedro") as demo:
     )
 
     generate_btn.click(
-        fn=generate_speech,
+        fn=generate_speech_stateless,
         inputs=[text_input, temperature, top_p, top_k, seed],
         outputs=[audio_output, status_output],
     )
