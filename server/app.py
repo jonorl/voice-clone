@@ -88,6 +88,7 @@ with gr.Blocks(title="Voice Clone - Pedro") as demo:
         fn=generate_speech_stateless,
         inputs=[text_input, temperature, top_p, top_k, seed],
         outputs=[audio_output, status_output],
+        api_name="generate_speech"
     )
 
     gr.Examples(
