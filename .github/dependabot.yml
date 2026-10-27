@@ -16,6 +16,9 @@ updates:
       # Jest 30's own Babel preset still requires Babel 7.
       - dependency-name: "@babel/*"
         update-types: ["version-update:semver-major"]
+      # typescript-eslint supports TypeScript below 6.1 only; lift this once it supports newer versions.
+      - dependency-name: typescript
+        versions: [">=6.1.0"]
     open-pull-requests-limit: 5
 
   - package-ecosystem: pip

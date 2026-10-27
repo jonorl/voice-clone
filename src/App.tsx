@@ -30,10 +30,8 @@ export default function VoiceCloneGenerator() {
   const t = translations[language];
 
   useEffect(() => {
-    if (!loading) {
-      setLoadingMessageIndex(0);
-      return;
-    }
+    // handleGenerate resets the index before each run, so there is nothing to reset here.
+    if (!loading) return;
 
     const interval = setInterval(() => {
       setLoadingMessageIndex((prevIndex) =>
@@ -302,6 +300,7 @@ export default function VoiceCloneGenerator() {
                   placeholder={t.enterSpanishText}
                   className="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent resize-none text-gray-100 placeholder-gray-500"
                   rows={6}
+                  maxLength={1000}
                 />
               </div>
 

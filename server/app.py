@@ -1,6 +1,11 @@
-import gradio as gr
-import subprocess
+import json
 import os
+import subprocess
+import sys
+import tempfile
+
+import gradio as gr
+import scipy.io.wavfile
 
 import uvicorn
 from fastapi import FastAPI
@@ -9,44 +14,67 @@ from fastapi.responses import JSONResponse
 # worker.py loads these on every request, so /health checks they are on the mounted volume.
 MODEL_FILES = [
     os.path.join("models", "coqui", "config.json"),
+    os.path.join("models", "coqui", "vocab.json"),
+    os.path.join("models", "coqui", "dvae.pth"),
+    os.path.join("models", "coqui", "mel_stats.pth"),
     os.path.join("models", "best_model_822.pth"),
     os.path.join("models", "sample5.wav"),
 ]
 
-def generate_speech_stateless(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
-    if not text.strip():
-        return None, "Please enter some text."
+# The Gradio API is public, so every value is checked here rather than trusting the UI's sliders. CPU inference takes
+# roughly as long as the speech it produces, so the text is capped to keep one request from holding the queue.
+MAX_TEXT_CHARS = 1000
+WORKER_TIMEOUT_SECONDS = 600
 
-    # A fixed output target for the isolated worker script
-    output_wav = "/tmp/output.wav"
-    if os.path.exists(output_wav):
-        os.remove(output_wav)
+
+def generate_speech_stateless(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
+    text = (text or "").strip()
+    if not text:
+        return None, "Please enter some text."
+    if len(text) > MAX_TEXT_CHARS:
+        return None, f"Please keep the text under {MAX_TEXT_CHARS} characters."
 
     try:
-        # Spin up a dedicated, isolated Python process to run inference
-        cmd = [
-            "python3", "worker.py",
-            "--text", text,
-            "--temperature", str(temperature),
-            "--top_p", str(top_p),
-            "--top_k", str(top_k),
-            "--seed", str(seed),
-            "--output", output_wav
-        ]
-        
-        # This blocks until the worker completely finishes and terminates
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        print(result.stdout) # Forward stdout to docker logs
+        params = {
+            "text": text,
+            "temperature": min(max(float(temperature), 0.1), 1.0),
+            "top_p": min(max(float(top_p), 0.1), 1.0),
+            "top_k": min(max(int(top_k), 1), 100),
+            "seed": int(seed),
+        }
+    except (TypeError, ValueError):
+        return None, "Temperature, Top P, Top K and Seed must be numbers."
 
-        if os.path.exists(output_wav):
-            return output_wav, "✅ Audio generated successfully!"
-        else:
+    # Each request gets its own directory, so overlapping requests cannot read each other's audio.
+    with tempfile.TemporaryDirectory() as workdir:
+        params["output"] = os.path.join(workdir, "output.wav")
+        try:
+            # The model runs in a fresh process that exits afterwards, so its memory is returned after every request.
+            # The parameters go over stdin rather than argv, so user text can never be read as a worker option.
+            result = subprocess.run(
+                [sys.executable, "worker.py"],
+                input=json.dumps(params),
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=WORKER_TIMEOUT_SECONDS,
+            )
+            print(result.stdout)  # Forward stdout to docker logs
+        except subprocess.TimeoutExpired:
+            print(f"Inference timed out after {WORKER_TIMEOUT_SECONDS}s")
+            return None, "❌ Generation took too long. Try a shorter text."
+        except subprocess.CalledProcessError as e:
+            # The traceback stays in the logs; callers only learn that it failed.
+            print(f"Inference process crashed:\n{e.stderr}")
+            return None, "❌ Inference failed. Please try again."
+
+        if not os.path.exists(params["output"]):
             return None, "❌ Error: Worker finished but output file was not found."
 
-    except subprocess.CalledProcessError as e:
-        error_msg = f"❌ Inference process crashed:\n{e.stderr}"
-        print(error_msg)
-        return None, error_msg
+        # Read into memory so the directory can be removed; Gradio writes the array back out as a WAV for the client.
+        sample_rate, audio = scipy.io.wavfile.read(params["output"])
+        return (sample_rate, audio), "✅ Audio generated successfully!"
+
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────────
 with gr.Blocks(title="Voice Clone - Pedro") as demo:
