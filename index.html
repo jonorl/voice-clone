@@ -2,21 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/pepe.png" />
+    <link rel="icon" type="image/png" href="./pepe.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Voice Clone project</title>
+
+    <!-- Google tag (gtag.js). gtag-init.js is deferred so it does not block rendering; gtag.js reads the queue
+         whenever either script runs first. -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ9NJ2VMWE"></script>
+    <script defer src="./gtag-init.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BQ9NJ2VMWE"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-BQ9NJ2VMWE');
-  </script>
   </body>
 </html>

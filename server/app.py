@@ -2,6 +2,17 @@ import gradio as gr
 import subprocess
 import os
 
+import uvicorn
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+
+# worker.py loads these on every request, so /health checks they are on the mounted volume.
+MODEL_FILES = [
+    os.path.join("models", "coqui", "config.json"),
+    os.path.join("models", "best_model_822.pth"),
+    os.path.join("models", "sample5.wav"),
+]
+
 def generate_speech_stateless(text, temperature=0.7, top_p=0.85, top_k=50, seed=42):
     if not text.strip():
         return None, "Please enter some text."
@@ -100,6 +111,25 @@ with gr.Blocks(title="Voice Clone - Pedro") as demo:
         inputs=[text_input, temperature, top_p, top_k, seed],
     )
 
+app = FastAPI()
+
+
+# The model loads in a fresh worker for each request, so there is nothing resident to check: the server is ready if it
+# answers and the model files are mounted. version is the commit the image was built from, so the deploy's smoke test
+# can tell the new container is the one answering.
+# HEAD is listed because the README's status badge (Shields) checks with it, and FastAPI does not add it to GET routes.
+@app.api_route("/health", methods=["GET", "HEAD"])
+def health():
+    missing = [f for f in MODEL_FILES if not os.path.exists(f)]
+    body = {"status": "error" if missing else "ok", "version": os.environ.get("GIT_SHA", "dev")}
+    if missing:
+        body["missing"] = missing
+    return JSONResponse(body, status_code=503 if missing else 200)
+
+
+# Gradio is mounted on FastAPI rather than launched on its own so /health can sit beside it on the same port.
+app = gr.mount_gradio_app(app, demo, path="", ssr_mode=False)
+
 # ── Launch ────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=7860, ssr_mode=False, share=False)
+    uvicorn.run(app, host="0.0.0.0", port=7860)

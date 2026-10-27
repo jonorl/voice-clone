@@ -1,5 +1,10 @@
 # Voice Clone Portfolio Project
 
+[![Test](https://github.com/jonorl/voice-clone/actions/workflows/test.yml/badge.svg)](https://github.com/jonorl/voice-clone/actions/workflows/test.yml)
+[![Build and Deploy](https://github.com/jonorl/voice-clone/actions/workflows/deploy.yml/badge.svg)](https://github.com/jonorl/voice-clone/actions/workflows/deploy.yml)
+[![CodeQL](https://github.com/jonorl/voice-clone/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/jonorl/voice-clone/security/code-scanning)
+[![API status](https://img.shields.io/website?url=https%3A%2F%2Fvoice.jonathan-orlowski.dev%2Fhealth&label=api&up_message=healthy&down_message=down)](https://voice.jonathan-orlowski.dev/health)
+
 AI-powered **Argentinean Spanish voice cloning** using **XTTS v2**, fine-tuned to replicate a specific voice profile with high naturalness and clarity. This project provides both a **web interface** and **API access** for easy experimentation and integration.
 
 ---
@@ -58,6 +63,18 @@ This project is built on **Coqui XTTS v2**, a multilingual text-to-speech model 
 * **Interface**: Gradio
 * **Language**: Python
 * **Deployment**: Hugging Face Spaces
+
+---
+
+## Development
+
+- `npm run dev` - Start the dev server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run typecheck` - Type-check without building
+- `npm test` - Run the Jest tests (`test:watch`, `test:coverage` also available)
+
+The API's `/health` endpoint reports whether the model files are mounted and which commit is deployed; each deploy waits for it to report the new commit before passing.
 
 ---
 

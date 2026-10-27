@@ -63,15 +63,10 @@ export default function VoiceCloneGenerator() {
         seed: seed,
       });
 
-      const resultData = result.data as any;
-      let rawAudioUrl = null;
-
+      const resultData = result.data as Array<{ url?: string } | string | null> | undefined;
       // 1. Extract the URL from the response
-      if (Array.isArray(resultData) && resultData[0]?.url) {
-        rawAudioUrl = resultData[0].url;
-      } else if (typeof resultData?.[0] === 'string') {
-        rawAudioUrl = resultData[0];
-      }
+      const first = resultData?.[0];
+      const rawAudioUrl = typeof first === 'string' ? first : first?.url;
 
       if (!rawAudioUrl) {
         throw new Error('No audio URL found in response');
@@ -455,15 +450,6 @@ export default function VoiceCloneGenerator() {
                       </p>
                     </div>
                     <p className="text-gray-500 text-xs">{t.processingTime}</p>
-                  </div>
-                )}
-
-                {error && (
-                  <div className="w-full">
-                    <div className="bg-red-900/30 border border-red-700 text-red-300 px-4 py-3 rounded-lg">
-                      <p className="font-semibold">{t.errorTitle}</p>
-                      <p className="text-sm">{error}</p>
-                    </div>
                   </div>
                 )}
 
