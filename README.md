@@ -5,6 +5,12 @@
 [![CodeQL](https://github.com/jonorl/voice-clone/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/jonorl/voice-clone/security/code-scanning)
 [![API status](https://img.shields.io/website?url=https%3A%2F%2Fvoice.jonathan-orlowski.dev%2Fhealth&label=api&up_message=healthy&down_message=down)](https://voice.jonathan-orlowski.dev/health)
 
+<p align="center">
+  <a href="https://jonathan-orlowski.dev/voice-clone/">
+    <img src="docs/preview.gif" alt="Picking an example prompt in Spanish and generating it: the app works on the cloned voice, then shows an audio player with the result." width="300" />
+  </a>
+</p>
+
 AI-powered **Argentinean Spanish voice cloning** using **XTTS v2**, fine-tuned to replicate a specific voice profile with high naturalness and clarity. This project provides both a **web interface** and **API access** for easy experimentation and integration.
 
 ---
