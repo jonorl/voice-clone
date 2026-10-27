@@ -1,4 +1,10 @@
-# The model is mounted from the VPS at run time, so it stays out of the image and the build context.
+# The image only serves app.py and worker.py; tests, tool config and caches stay out of it. The model is mounted
+# from the VPS at run time.
+tests/
+requirements-dev.txt
+pyproject.toml
+.pytest_cache/
+.ruff_cache/
 models/
 *.pth
 *.wav

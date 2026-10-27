@@ -11,99 +11,144 @@
   </a>
 </p>
 
-AI-powered **Argentinean Spanish voice cloning** using **XTTS v2**, fine-tuned to replicate a specific voice profile with high naturalness and clarity. This project provides both a **web interface** and **API access** for easy experimentation and integration.
+A web demo of Argentinean Spanish voice cloning. Type some Spanish and it is spoken in the voice of my friend Pedro, using a [Coqui XTTS v2](https://github.com/idiap/coqui-ai-TTS) model I fine-tuned on his voice messages. Try it at **https://jonathan-orlowski.dev/voice-clone/**.
 
----
+There is also an [Android app](https://github.com/jonorl/voice-clone-mobile) that uses the same API.
 
-## New !!! Android app
+## Architecture
 
-The New Android app is published on this [repo](https://github.com/jonorl/voice-clone-mobile)
+- **Frontend** (repository root): a React single-page app, built by Cloudflare Pages on every push. It sends the text and settings to the model with `@gradio/client`, then plays the returned audio and offers it as a download, in English or Spanish.
+- **Model API** (`/server`): a Gradio app mounted on FastAPI, which adds `/health`. It runs in Docker on a VPS behind Caddy at `voice.jonathan-orlowski.dev`. Each request starts `worker.py` in a fresh process, which loads the model, generates the audio and exits, so the model's memory is returned between requests. The fine-tuned checkpoint is not in the repository; the VPS mounts it into the container at `/app/models`.
 
-## Key Features
+## Project structure
 
-* **High‑quality Spanish synthesis** using a fine‑tuned XTTS v2 model
-* **Near real-time generation** for short and medium-length texts
-* **Advanced controls** (temperature, top_p, top_k) to shape voice output
-* **Reproducible results** via deterministic seeding
-* **User-friendly web UI** built with Gradio
-* **API access** for programmatic usage
+```
+├── src/
+│   ├── App.tsx                 # The whole UI: about, settings, generation and playback
+│   └── translations.ts         # English and Spanish strings
+├── assets/sample.wav           # A clip of the original voice, played on the page
+├── public/
+│   ├── _headers                # Cloudflare Pages security headers (CSP)
+│   └── gtag-init.js            # Google Analytics bootstrap
+└── server/
+    ├── app.py                  # Gradio + FastAPI app: validates input and runs the worker
+    ├── worker.py               # Loads the model and writes one WAV file
+    ├── tests/                  # pytest suite, run with a stand-in worker
+    └── Dockerfile
+```
 
----
+## Model
 
-## Live Demo / Space
+- **Base:** Coqui XTTS v2, a multilingual text-to-speech model with GPT-style autoregressive decoding.
+- **Data:** about 45 minutes of Pedro's WhatsApp voice messages, used with his permission.
+- **Training:** fine-tuned for 10 epochs with AdamW on a local AMD 6950 XT GPU with ROCm. The resulting checkpoint is 5.6 GB.
+- **Inference:** the speaker's voice is taken from one reference clip (`sample5.wav`), then the text is generated in Spanish at 24 kHz.
 
-Use the web interface to generate speech directly from your browser:
+### Settings
 
-1. Enter Spanish text
-2. (Optional) Adjust synthesis parameters
-3. Click **Generate Speech**
-4. Play or download the generated audio
+| Setting         | Range       | Effect                                                                                       |
+| --------------- | ----------- | -------------------------------------------------------------------------------------------- |
+| **Temperature** | 0.1 – 1.0   | Randomness in the prosody. Lower sounds steadier; higher sounds more expressive.             |
+| **Top P**       | 0.1 – 1.0   | Nucleus sampling threshold. Lower values reduce variety.                                      |
+| **Top K**       | 1 – 100     | How many candidate tokens are considered at each step.                                        |
+| **Seed**        | Any integer | The same text, settings and seed give the same audio.                                         |
 
----
+The API rejects text over 1,000 characters and clamps the settings to these ranges.
 
-## How It Works
+### Limitations
 
-This project is built on **Coqui XTTS v2**, a multilingual text-to-speech model capable of voice cloning. The model has been **fine-tuned on Spanish voice samples** to reproduce a specific speaker’s vocal characteristics, including:
+- It runs on a CPU-only server and loads the model for every request, so each generation takes two to three minutes.
+- With only 45 minutes of training audio, the base model's accent sometimes comes through, so the voice can sound more like Spain than Buenos Aires.
+- Only Spanish is supported.
 
-* Intonation
-* Rhythm
-* Accent
-* Voice timbre
+## Tech stack
 
----
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS and Lucide
+- **Model:** Coqui TTS (XTTS v2) and PyTorch (CPU), served with Gradio and FastAPI
+- **Hosting:** Cloudflare Pages for the frontend; Docker, Caddy and GHCR on the VPS for the model
 
-## Synthesis Parameters
+## Getting started
 
-| Parameter       | Range       | Description                                                                                              |
-| --------------- | ----------- | -------------------------------------------------------------------------------------------------------- |
-| **Temperature** | 0.1 – 1.0   | Controls randomness in speech prosody. Lower values sound more stable; higher values add expressiveness. |
-| **Top P**       | 0.1 – 1.0   | Nucleus sampling threshold. Lower values reduce diversity.                                               |
-| **Top K**       | 1 – 100     | Limits candidate tokens during generation.                                                               |
-| **Seed**        | Any integer | Ensures reproducible audio output when reused.                                                           |
+### Frontend
 
----
+```bash
+npm install
+npm run dev
+```
 
-## Tech Stack
+Then open `http://localhost:5173`. The app calls the production model API, so nothing else needs to run.
 
-* **Model**: Coqui XTTS v2
-* **Interface**: Gradio
-* **Language**: Python
-* **Deployment**: Hugging Face Spaces
+### Model API
 
----
+You need the fine-tuned checkpoint and the XTTS v2 base files in `server/models/`:
 
-## Development
+```
+models/
+├── best_model_822.pth     # the fine-tuned checkpoint
+├── sample5.wav            # the reference clip
+└── coqui/                 # XTTS v2 base files
+    ├── config.json
+    ├── vocab.json
+    ├── dvae.pth
+    └── mel_stats.pth
+```
 
-- `npm run dev` - Start the dev server
-- `npm run build` - Build for production
-- `npm run lint` - Run ESLint
-- `npm run typecheck` - Type-check without building
-- `npm test` - Run the Jest tests (`test:watch`, `test:coverage` also available)
+```bash
+cd server
+docker build -t voice-clone .
+docker run -p 7860:7860 -v "$PWD/models:/app/models" voice-clone
+```
 
-The API's `/health` endpoint reports whether the model files are mounted and which commit is deployed; each deploy waits for it to report the new commit before passing.
+`http://localhost:7860` serves the Gradio page, and `http://localhost:7860/health` the health check, which lists any of these files that are missing.
 
----
+## Testing
 
-## Ethical Use Notice
+### Frontend
 
-This project demonstrates voice cloning technology for **educational and experimental purposes only**. Ensure that you:
+```bash
+npm test                # once
+npm run test:watch      # re-run on changes
+npm run test:coverage   # with a coverage report
+npm run typecheck       # TypeScript, without building
+npm run lint            # ESLint
+```
 
-* Have **explicit permission** to clone any individual’s voice
-* Do **not** use generated audio for impersonation, fraud, or deception
-* Comply with all applicable laws and platform policies
+The Jest suite covers the language toggle, the examples, generating and playing audio, the error messages, form labels and the footer link, with the Gradio client mocked. It also checks that both languages have the same strings.
 
----
+### Model API
 
-## License
+```bash
+cd server
+pip install -r requirements.txt -r requirements-dev.txt
+python -m pytest                       # tests
+ruff check . && ruff format --check .  # lint and formatting
+```
 
-This Space uses **XTTS v2**, which is distributed under the **Coqui Public Model License**. Please review the license before commercial or large-scale usage.
+The tests stand in for `worker.py`, so they need no model. They check `/health` with and without the model files, that Gradio still exposes the `generate_speech` endpoint the frontend calls, that settings reach the worker on stdin and are clamped, that oversized or invalid input is refused, and that crashes and timeouts give a clean message.
 
----
+## Deployment
+
+- **Model API:** pushing to `main` with changes under `server/` runs the `Build and Deploy` workflow. It runs the tests first, then builds the Docker image, pushes it to `ghcr.io/jonorl/voice-clone`, then pulls it on the VPS and recreates the container with Docker Compose. A final smoke test waits until `/health` reports the new commit, then checks that Gradio still exposes the endpoint the frontend calls, and fails the run otherwise.
+- **Frontend:** Cloudflare Pages builds it on every push, with preview deployments for other branches.
+
+## Security and maintenance
+
+- **CI:** the `Test` workflow runs on every push and pull request. It type-checks, lints and tests the frontend, and lints and tests the model API.
+- **Branch ruleset:** changes to `main` go through a pull request with passing tests and no new high or critical CodeQL alerts. Force-pushes and deletion are blocked; repository admins can bypass.
+- **CodeQL:** scans the TypeScript, the Python and the workflows weekly and on every pull request.
+- **Content Security Policy:** enforced from [`public/_headers`](public/_headers), alongside other security headers. Scripts load only from the site itself, Google Analytics and Cloudflare Web Analytics, and the page can only talk to the model API and the two analytics services.
+- **Dependabot:** security updates as soon as an advisory appears, and version updates every Monday for npm, pip and the Docker base image, and monthly for GitHub Actions. Minor and patch bumps arrive grouped. The PyTorch stack, coqui-tts, transformers and scipy are held back; [`.github/dependabot.yml`](.github/dependabot.yml) explains why.
+- **Secret scanning** with push protection is on.
+
+## Ethical use
+
+The voice belongs to a real person who agreed to this demo. Do not use it, or this code, to clone anyone's voice without their explicit permission, or to impersonate, defraud or deceive.
 
 ## Acknowledgments
 
-* [Coqui TTS](https://github.com/coqui-ai/TTS) for XTTS v2
-* [Gradio](https://gradio.app/) for the web interface
-* Hugging Face Spaces for hosting
+- Pedro ([PsicogamerRandomStreaming](https://www.twitch.tv/psicogamerrandomstreaming)), for lending his voice.
+- [Coqui TTS](https://github.com/idiap/coqui-ai-TTS), maintained by Idiap, for XTTS v2.
 
----
+## Author
+
+Developed by [Jonathan Orlowski](https://jonathan-orlowski.dev/). The code is licensed under the Apache License 2.0, see [`LICENSE`](LICENSE). The XTTS v2 model, and so the fine-tuned checkpoint, is under the [Coqui Public Model License](https://coqui.ai/cpml), which allows non-commercial use only.

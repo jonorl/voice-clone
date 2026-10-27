@@ -6,7 +6,6 @@ import tempfile
 
 import gradio as gr
 import scipy.io.wavfile
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -96,19 +95,31 @@ with gr.Blocks(title="Voice Clone - Pedro") as demo:
                 label="Text to Synthesize",
                 placeholder="A todo el mundo le gusta el jarabe para la tos...",
                 lines=3,
-                value="A todo el mundo le gusta el jarabe para la tos, el olor del jarabe para la tos. Pero nadie lo usa como perfume."
+                value=(
+                    "A todo el mundo le gusta el jarabe para la tos, el olor del jarabe para la tos. "
+                    "Pero nadie lo usa como perfume."
+                ),
             )
 
             with gr.Accordion("Advanced Parameters", open=False):
-                temperature = gr.Slider(0.1, 1.0, value=0.7,  step=0.05, label="Temperature", info="Controls randomness — higher = more varied prosody")
-                top_p       = gr.Slider(0.1, 1.0, value=0.85, step=0.05, label="Top P",        info="Nucleus sampling — controls diversity")
-                top_k       = gr.Slider(1,   100, value=50,   step=1,    label="Top K",        info="Limits vocabulary selection")
-                seed        = gr.Number(value=42, label="Seed", info="Random seed for reproducibility", precision=0)
+                temperature = gr.Slider(
+                    0.1,
+                    1.0,
+                    value=0.7,
+                    step=0.05,
+                    label="Temperature",
+                    info="Controls randomness — higher = more varied prosody",
+                )
+                top_p = gr.Slider(
+                    0.1, 1.0, value=0.85, step=0.05, label="Top P", info="Nucleus sampling — controls diversity"
+                )
+                top_k = gr.Slider(1, 100, value=50, step=1, label="Top K", info="Limits vocabulary selection")
+                seed = gr.Number(value=42, label="Seed", info="Random seed for reproducibility", precision=0)
 
             generate_btn = gr.Button("🎵 Generate Speech", variant="primary", size="lg")
 
         with gr.Column(scale=1):
-            audio_output  = gr.Audio(label="Generated Audio", type="filepath")
+            audio_output = gr.Audio(label="Generated Audio", type="filepath")
             status_output = gr.Textbox(label="Status", interactive=False)
 
     gr.Markdown(
@@ -127,14 +138,14 @@ with gr.Blocks(title="Voice Clone - Pedro") as demo:
         fn=generate_speech_stateless,
         inputs=[text_input, temperature, top_p, top_k, seed],
         outputs=[audio_output, status_output],
-        api_name="generate_speech"
+        api_name="generate_speech",
     )
 
     gr.Examples(
         examples=[
             ["Hola, soy Pedro. Bienvenidos a mi demostración de clonación de voz.", 0.7, 0.85, 50, 67],
-            ["La inteligencia artificial ha avanzado mucho en los últimos años.",    0.5, 0.9,  40, 42],
-            ["¿Cómo va todo? Espero que estés teniendo un excelente día.",           0.8, 0.8,  60, 123],
+            ["La inteligencia artificial ha avanzado mucho en los últimos años.", 0.5, 0.9, 40, 42],
+            ["¿Cómo va todo? Espero que estés teniendo un excelente día.", 0.8, 0.8, 60, 123],
         ],
         inputs=[text_input, temperature, top_p, top_k, seed],
     )

@@ -34,6 +34,23 @@ describe("App", () => {
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Voice Cloning Demo");
   });
 
+  it("labels every control", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await user.click(screen.getByRole("button", { name: /Advanced Settings/ }));
+
+    for (const label of ["Text to Synthesize", "Temperature", "Top-k (Sampling)", "Top-p (Nucleus)", "Random Seed"]) {
+      expect(screen.getByLabelText(label)).toBeInTheDocument();
+    }
+    expect(screen.getByRole("group", { name: /Example/ })).toBeInTheDocument();
+  });
+
+  it("links to this project's source", () => {
+    render(<App />);
+
+    expect(screen.getByRole("link", { name: "GitHub" })).toHaveAttribute("href", "https://github.com/jonorl/voice-clone");
+  });
+
   it("loads an example into the text box", async () => {
     const user = userEvent.setup();
     render(<App />);

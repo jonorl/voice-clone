@@ -11,16 +11,8 @@ interface Translations {
     modelParameters: string;
     modelParametersDescription: string;
     examplesTitle: string;
-    inputLabel: string;
-    inputPlaceholder: string;
     advancedSettings: string;
     temperatureLabel: string;
-    temperatureDescription: string;
-    topKLabel: string;
-    topKDescription: string;
-    topPLabel: string;
-    topPDescription: string;
-    seedLabel: string;
     seedDescription: string;
     generateButton: string;
     generatingButton: string;
@@ -46,7 +38,6 @@ interface Translations {
     inferenceSpeed: string;
     inferenceSpeedDescription: string;
     footer: string;
-    viewGithub: string;
     whoIsBeingClonedTitle: string;
     whoIsBeingClonedDescription: string;
     whoIsBeingClonedText: string;
@@ -86,13 +77,6 @@ interface Translations {
       feature3: string;
       feature4: string;
     };
-    statusReady: string;
-    statusSleeping: string;
-    statusChecking: string;
-    statusError: string;
-    wakeUpButton: string;
-    wakingUp: string;
-    sleepingMessage: string;
   };
   es: {
     title: string;
@@ -106,16 +90,8 @@ interface Translations {
     modelParameters: string;
     modelParametersDescription: string;
     examplesTitle: string;
-    inputLabel: string;
-    inputPlaceholder: string;
     advancedSettings: string;
     temperatureLabel: string;
-    temperatureDescription: string;
-    topKLabel: string;
-    topKDescription: string;
-    topPLabel: string;
-    topPDescription: string;
-    seedLabel: string;
     seedDescription: string;
     generateButton: string;
     generatingButton: string;
@@ -141,7 +117,6 @@ interface Translations {
     inferenceSpeed: string;
     inferenceSpeedDescription: string;
     footer: string;
-    viewGithub: string;
     whoIsBeingClonedTitle: string;
     whoIsBeingClonedDescription: string;
     whoIsBeingClonedText: string;
@@ -181,13 +156,6 @@ interface Translations {
       feature3: string;
       feature4: string;
     };
-    statusReady: string;
-    statusSleeping: string;
-    statusChecking: string;
-    statusError: string;
-    wakeUpButton: string;
-    wakingUp: string;
-    sleepingMessage: string;
   };
 }
 
@@ -204,16 +172,8 @@ export const translations: Translations = {
     modelParameters: 'Model Parameters',
     modelParametersDescription: 'Temperature controls speech variation (lower = more consistent, higher = more expressive). Top-K and Top-P limit token sampling for coherent output. Seed ensures reproducibility.',
     examplesTitle: 'Example Prompts',
-    inputLabel: 'Text to Synthesize',
-    inputPlaceholder: 'Enter the text you want to convert to speech...',
     advancedSettings: 'Advanced Settings',
     temperatureLabel: 'Temperature',
-    temperatureDescription: 'Controls variation in speech',
-    topKLabel: 'Top K',
-    topKDescription: 'Limits vocabulary choices',
-    topPLabel: 'Top P',
-    topPDescription: 'Nucleus sampling threshold',
-    seedLabel: 'Seed',
     seedDescription: 'For reproducible results',
     generateButton: 'Generate Speech',
     generatingButton: 'Generating Audio...',
@@ -231,7 +191,7 @@ export const translations: Translations = {
       'Getting in front of the mic...',
       'Rendering speech output...'
     ],
-    processingTime: 'This may take 50-60 seconds',
+    processingTime: 'This can take up to 3 minutes',
     errorTitle: 'Error',
     successMessage: 'Audio generated successfully! Click play to listen.',
     downloadButton: 'Download Audio File',
@@ -248,20 +208,19 @@ export const translations: Translations = {
     modelSize: 'Model Size',
     modelSizeDescription: '5.6GB checkpoint with ~1.87B base parameters, optimized for Spanish phonemes and prosody patterns',
     inferenceSpeed: 'Inference Speed',
-    inferenceSpeedDescription: '~5 seconds per generation on GPU (T4), ~30 seconds on CPU for typical sentences',
-    footer: 'Built with Coqui TTS, PyTorch, Gradio, and React • Model hosted on Hugging Face Spaces',
-    viewGithub: 'View on GitHub',
+    inferenceSpeedDescription: '~5 seconds per generation on a GPU (T4). This demo runs on a CPU-only server and loads the model for each request, so expect 2-3 minutes',
+    footer: 'Built with Coqui TTS, PyTorch, Gradio, and React • Model served from my own VPS',
     technicalDetails: {
       model: 'Model: Coqui XTTS v2 (Fine-tuned)',
       framework: 'Framework: PyTorch & TTS Library',
       training: 'Training: Custom Spanish voice dataset',
-      deployment: 'Deployment: Gradio API on Hugging Face Spaces',
+      deployment: 'Deployment: Gradio API in Docker on a self-hosted VPS',
     },
     features: {
       feature1: 'Natural prosody and intonation',
       feature2: 'Optimised for Argentinean Spanish',
       feature3: 'Adjustable generation parameters',
-      feature4: 'Real-time synthesis',
+      feature4: 'Reproducible output with a fixed seed',
     },
     whoIsBeingClonedTitle: 'Who is Being Cloned?',
     whoIsBeingClonedDescription: 'The voice you\'ll hear in this demo belongs to my friend Pedro, aka',
@@ -290,13 +249,6 @@ export const translations: Translations = {
     topPNucleus: 'Top-p (Nucleus)',
     controlsDiversityOfOutput: 'Controls diversity of output',
     randomSeed: 'Random Seed',
-    statusReady: 'Model Ready',
-    statusSleeping: 'Model Sleeping',
-    statusChecking: 'Checking Status...',
-    statusError: 'Connection Error',
-    wakeUpButton: 'Wake Up Model',
-    wakingUp: 'Waking up model...',
-    sleepingMessage: 'The AI model is currently sleeping. Click the button above to wake it up (this may take 30-60 seconds).',
   },
   es: {
     title: 'Demostración de Clonación de Voz',
@@ -310,22 +262,14 @@ export const translations: Translations = {
     modelParameters: 'Parámetros del Modelo',
     modelParametersDescription: 'La temperatura controla la variación del habla (menor = más consistente, mayor = más expresivo). Top-K y Top-P limitan el muestreo de tokens para una salida coherente. El SEED garantiza reproducibilidad.',
     examplesTitle: 'Ejemplos de Texto',
-    inputLabel: 'Texto para Sintetizar',
-    inputPlaceholder: 'Ingresa el texto que deseas convertir en voz...',
     advancedSettings: 'Configuración Avanzada',
     temperatureLabel: 'Temperatura',
-    temperatureDescription: 'Controla la variación en el habla',
-    topKLabel: 'Top K',
-    topKDescription: 'Limita las opciones de vocabulario',
-    topPLabel: 'Top P',
-    topPDescription: 'Umbral de muestreo por núcleo',
-    seedLabel: 'SEED',
     seedDescription: 'Para resultados reproducibles',
     generateButton: 'Generar Voz',
     generatingButton: 'Generando Audio...',
     outputLabel: 'Audio Generado',
     processingMessage: 'Procesando síntesis de voz...',
-    processingTime: 'Esto puede tomar 50-60 segundos',
+    processingTime: 'Esto puede tardar hasta 3 minutos',
         loadingMessages: [
       'Analizando patrones de texto...',
       'Cargando modelo de voz...',
@@ -354,20 +298,19 @@ export const translations: Translations = {
     modelSize: 'Tamaño del Modelo',
     modelSizeDescription: 'Checkpoint de 5.6GB con ~1.87B parámetros base, optimizado para fonemas y patrones de prosodia del español',
     inferenceSpeed: 'Velocidad de Inferencia',
-    inferenceSpeedDescription: '~5 segundos por generación en GPU (T4), ~30 segundos en CPU para oraciones típicas',
-    footer: 'Construido con Coqui TTS, PyTorch, Gradio y React • Modelo alojado en Hugging Face Spaces',
-    viewGithub: 'Ver en GitHub',
+    inferenceSpeedDescription: '~5 segundos por generación en GPU (T4). Esta demo corre en un servidor sin GPU y carga el modelo en cada pedido, así que tarda 2-3 minutos',
+    footer: 'Construido con Coqui TTS, PyTorch, Gradio y React • Modelo servido desde mi propio VPS',
     technicalDetails: {
       model: 'Modelo: Coqui XTTS v2 (fine tuned)',
       framework: 'Framework: PyTorch y TTS',
       training: 'Entrenamiento: Conjunto de datos personalizado de voz en español de Argentina',
-      deployment: 'Despliegue: API Gradio en Hugging Face Spaces',
+      deployment: 'Despliegue: API Gradio en Docker sobre un VPS propio',
     },
     features: {
       feature1: 'Prosodia y entonación natural',
       feature2: 'Optimizado para español Argentino',
       feature3: 'Parámetros de generación ajustables',
-      feature4: 'Síntesis en tiempo real',
+      feature4: 'Resultados reproducibles con una semilla fija',
     },
     whoIsBeingClonedTitle: '¿De quién es la voz clonada?',
     whoIsBeingClonedDescription: 'La voz que escucharás en esta demostración pertenece a mi amigo Pedro, aka',
@@ -396,12 +339,5 @@ export const translations: Translations = {
     topPNucleus: 'Top-p (Núcleo)',
     controlsDiversityOfOutput: 'Controla la diversidad de la salida',
     randomSeed: 'SEED aleatoria',
-    statusReady: 'Modelo Listo',
-    statusSleeping: 'Modelo Durmiendo',
-    statusChecking: 'Verificando Estado...',
-    statusError: 'Error de Conexión',
-    wakeUpButton: 'Despertar Modelo',
-    wakingUp: 'Despertando modelo...',
-    sleepingMessage: 'El modelo de IA está durmiendo actualmente. Hace clic en el botón de arriba para despertarlo (puede tardar 30-60 segundos).',
   },
 };

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { Loader2, Mic2, Volume2, Settings } from 'lucide-react';
-import { SiHuggingface } from "react-icons/si";
 import { translations } from './translations'
 import sampleWav from '../assets/sample.wav';
 
@@ -73,7 +72,7 @@ export default function VoiceCloneGenerator() {
       // 2. Fetch the file as a Blob using the Token
       const response = await fetch(rawAudioUrl);
 
-      if (!response.ok) throw new Error("Failed to fetch private audio file from HF");
+      if (!response.ok) throw new Error("Failed to download the generated audio");
 
       const blob = await response.blob();
       const secureLocalUrl = URL.createObjectURL(blob);
@@ -130,6 +129,7 @@ export default function VoiceCloneGenerator() {
           </button>
         </div>
 
+        <main>
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
@@ -291,10 +291,11 @@ export default function VoiceCloneGenerator() {
             {/* Input Section */}
             <div className="space-y-6">
               <div>
-                <label className="text-sm font-semibold text-gray-300 mb-2 block">
+                <label htmlFor="text-input" className="text-sm font-semibold text-gray-300 mb-2 block">
                   {t.textToSynthesize}
                 </label>
                 <textarea
+                  id="text-input"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder={t.enterSpanishText}
@@ -305,10 +306,10 @@ export default function VoiceCloneGenerator() {
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-300 mb-2 block">
+                <p id="examples-label" className="text-sm font-semibold text-gray-300 mb-2 block">
                   {t.examplesTitle}
-                </label>
-                <div className="grid grid-cols-2 gap-2">
+                </p>
+                <div role="group" aria-labelledby="examples-label" className="grid grid-cols-2 gap-2">
                   {examples.map((example, idx) => (
                     <button
                       key={idx}
@@ -323,12 +324,13 @@ export default function VoiceCloneGenerator() {
 
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-300">
+                  <label htmlFor="temperature-input" className="text-sm font-medium text-gray-300">
                     {t.temperatureLabel}
                   </label>
                   <span className="text-sm font-mono text-cyan-400">{temperature.toFixed(2)}</span>
                 </div>
                 <input
+                  id="temperature-input"
                   type="range"
                   min="0.1"
                   max="1.0"
@@ -354,12 +356,13 @@ export default function VoiceCloneGenerator() {
                 <div className="space-y-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-sm font-medium text-gray-300">
+                      <label htmlFor="top-k-input" className="text-sm font-medium text-gray-300">
                         {t.topKSampling}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{topK}</span>
                     </div>
                     <input
+                      id="top-k-input"
                       type="range"
                       min="10"
                       max="100"
@@ -375,12 +378,13 @@ export default function VoiceCloneGenerator() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-sm font-medium text-gray-300">
+                      <label htmlFor="top-p-input" className="text-sm font-medium text-gray-300">
                         {t.topPNucleus}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{topP.toFixed(2)}</span>
                     </div>
                     <input
+                      id="top-p-input"
                       type="range"
                       min="0.1"
                       max="1.0"
@@ -396,12 +400,13 @@ export default function VoiceCloneGenerator() {
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-sm font-medium text-gray-300">
+                      <label htmlFor="seed-input" className="text-sm font-medium text-gray-300">
                         {t.randomSeed}
                       </label>
                       <span className="text-sm font-mono text-cyan-400">{seed}</span>
                     </div>
                     <input
+                      id="seed-input"
                       type="number"
                       value={seed}
                       onChange={(e) => setSeed(parseInt(e.target.value) || 0)}
@@ -435,9 +440,9 @@ export default function VoiceCloneGenerator() {
 
             {/* Output Section */}
             <div>
-              <label className="text-sm font-semibold text-gray-300 mb-2 block">
+              <p className="text-sm font-semibold text-gray-300 mb-2 block">
                 {t.outputLabel}
-              </label>
+              </p>
               <div className="bg-gradient-to-br from-gray-900 to-slate-900 rounded-lg p-6 min-h-[400px] border-2 border-gray-700 flex flex-col items-center justify-center">
                 {loading && (
                   <div className="flex flex-col items-center gap-4">
@@ -542,7 +547,9 @@ export default function VoiceCloneGenerator() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-gray-700 pt-8">
+        </main>
+
+        <footer className="mt-12 border-t border-gray-700 pt-8">
           <div className="text-center space-y-4">
             <p className="text-sm text-gray-400">
               {t.footer}
@@ -557,7 +564,7 @@ export default function VoiceCloneGenerator() {
                 Jonathan Orlowski
               </a>
               <a
-                href="https://github.com/jonorl/simpsons-GPT"
+                href="https://github.com/jonorl/voice-clone"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-2"
@@ -567,18 +574,9 @@ export default function VoiceCloneGenerator() {
                 </svg>
                 GitHub
               </a>
-              <a
-                href="https://huggingface.co/spaces/jonorl"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-yellow-400 transition-colors flex items-center gap-2"
-              >
-                <SiHuggingface className="mb-1" aria-label="HuggingFace" />
-                Hugging Face
-              </a>
             </div>
           </div>
-        </div>
+        </footer>
       </div>
     </div>
   );
